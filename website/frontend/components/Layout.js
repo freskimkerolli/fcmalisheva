@@ -12,6 +12,7 @@ export default function Layout({ children }) {
           content="Website zyrtar i FC Malisheva, skuadrës së Superligës së Kosovës dhe Conference League."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href="/assets/MalishevaLogo.png" />
       </Head>
       <Header />
       <main className="page-container">{children}</main>
