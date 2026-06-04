@@ -6,10 +6,9 @@
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "nodemon backend/server.js --watch backend",
     "dev:admin": "nodemon admin-server.js --watch admin-server.js --watch backend",
-    "start:admin": "node admin-server.js",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:admin\"",
-    "build": "next build ./frontend",
-    "start": "next start ./frontend"
+    "build": "echo 'No build needed'",
+    "start": "node admin-server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
