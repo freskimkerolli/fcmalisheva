@@ -3,7 +3,7 @@ import axios from "axios";
 import { useTranslation } from "../hooks/useTranslation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-const BACKEND = "http://localhost:4000";
+const BACKEND = API_URL.replace(/\/api$/, "");
 
 function calcAge(birthDate) {
   if (!birthDate) return "—";

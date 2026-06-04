@@ -3,6 +3,7 @@ import axios from "axios";
 import { useTranslation } from "../hooks/useTranslation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const BACKEND = API_URL.replace(/\/api$/, "");
 
 export default function Staff() {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ export default function Staff() {
         {staff.map((member) => (
           <article key={member.id} className="card">
             <img
-              src={`http://localhost:4000${member.photo}`}
+              src={`${BACKEND}${member.photo}`}
               alt={member.name}
               style={{ width: "100%", height: "280px", objectFit: "cover", objectPosition: "top", borderRadius: "12px" }}
             />

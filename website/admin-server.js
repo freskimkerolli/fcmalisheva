@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
@@ -14,6 +15,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "fcmalisheva-admin-secret";
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "admin123";
 
+app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "admin-public")));
 app.use("/assets", express.static(path.join(__dirname, "frontend", "public", "assets")));
@@ -51,6 +53,15 @@ function auth(req, res, next) {
     res.status(401).json({ error: "Token i pavlefshëm" });
   }
 }
+
+// ── Routes Publike (pa autentikim, për frontend Vercel) ───────────────────────
+app.get("/api/team",           async (req, res) => { try { res.json(await store.getPlayers()); }        catch (e) { res.status(500).json({ error: e.message }); } });
+app.get("/api/staff",          async (req, res) => { try { res.json(await store.getStaff()); }          catch (e) { res.status(500).json({ error: e.message }); } });
+app.get("/api/gallery",        async (req, res) => { try { res.json(await store.getGallery()); }        catch (e) { res.status(500).json({ error: e.message }); } });
+app.get("/api/results",        async (req, res) => { try { res.json(await store.getResults()); }        catch (e) { res.status(500).json({ error: e.message }); } });
+app.get("/api/announcements",  async (req, res) => { try { res.json(await store.getAnnouncements()); } catch (e) { res.status(500).json({ error: e.message }); } });
+app.get("/api/upcoming-match", async (req, res) => { try { res.json(await store.getUpcomingMatch()); } catch (e) { res.status(500).json({ error: e.message }); } });
+app.get("/api/sponsors",       async (req, res) => { try { res.json(await store.getSponsors()); }       catch (e) { res.status(500).json({ error: e.message }); } });
 
 // ── Login ──────────────────────────────────────────────────────────────────────
 app.post("/api/login", (req, res) => {

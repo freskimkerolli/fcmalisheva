@@ -3,6 +3,7 @@ import axios from "axios";
 import { useTranslation } from "../hooks/useTranslation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const BACKEND = API_URL.replace(/\/api$/, "");
 
 export default function Gallery() {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ export default function Gallery() {
         {items.map((item, index) => (
           <div key={index} className="gallery-card">
             <img
-              src={item}
+              src={item.startsWith("/") ? `${BACKEND}${item}` : item}
               alt={`${t("gallery.eyebrow")} ${index + 1}`}
               style={{ width: "100%", height: "220px", objectFit: "cover", display: "block" }}
             />
