@@ -73,4 +73,32 @@ const table = [
   { position: 10, team: "Prishtina e Re", played: 36, gd: -21, points: 31 },
 ];
 
-module.exports = { players, staff, gallery, results, table };
+const announcements = [
+  { title: "Fitorja e madhe ndaj Prishtinës", title_en: "Big win against Prishtina", content: "FC Malisheva fitoi me rezultatin 3-1 ndaj Prishtinës në ndeshjen e fundit.", content_en: "FC Malisheva won 3-1 against Prishtina in their latest match.", category: "Ndeshje", category_en: "Match", date_display: "1 qershor 2026" },
+  { title: "Lojtari i javës: Albin Rama", title_en: "Player of the week: Albin Rama", content: "Albin Rama u emërua lojtari i javës pas performancës së tij të jashtëzakonshme.", content_en: "Albin Rama was named player of the week after his outstanding performance.", category: "Tima", category_en: "Team", date_display: "31 maj 2026" },
+  { title: "Përgatitje për Conference League", title_en: "Conference League preparation", content: "Ekipi përgatitet për ndeshjen e rëndësishme të Conference League këtë javë.", content_en: "The team is preparing for the important Conference League match this week.", category: "Kampionat", category_en: "Championship", date_display: "30 maj 2026" },
+];
+
+const upcomingMatch = {
+  competition: "Superliga",
+  matchday: "Dita 8",
+  stadium: "Stadiumi Liman Gegaj",
+  home_team: "FC Malisheva",
+  home_logo: "/assets/MalishevaLogo.png",
+  away_team: "Drita Gjilanë",
+  away_logo: "/assets/MalishevaLogo.png",
+  match_date: "5 qershor 2026",
+  match_time: "19:00",
+  ticket_url: "#",
+};
+
+const sponsors = [
+  { name: "Banka Ekonomike", logo_path: "/assets/Banka_Ekonomike-logo.png", website_url: "#", sort_order: 1 },
+  { name: "Dijamant",        logo_path: "/assets/Dijamant.jpg",              website_url: "#", sort_order: 2 },
+  { name: "Lanti-B",         logo_path: "/assets/Lanti-B.jpg",               website_url: "#", sort_order: 3 },
+  { name: "MuriVinkell",     logo_path: "/assets/MuriVinkell.jpg",           website_url: "#", sort_order: 4 },
+  { name: "VPD",             logo_path: "/assets/vpd.png",                   website_url: "#", sort_order: 5 },
+  { name: "VSH",             logo_path: "/assets/VSH.png",                   website_url: "#", sort_order: 6 },
+];
+
+module.exports = { players, staff, gallery, results, table, announcements, upcomingMatch, sponsors };

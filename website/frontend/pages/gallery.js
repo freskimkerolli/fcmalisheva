@@ -23,7 +23,11 @@ export default function Gallery() {
       <section className="gallery-grid">
         {items.map((item, index) => (
           <div key={index} className="gallery-card">
-            <img src={item} alt={`${t("gallery.eyebrow")} ${index + 1}`} />
+            <img
+              src={item}
+              alt={`${t("gallery.eyebrow")} ${index + 1}`}
+              style={{ width: "100%", height: "220px", objectFit: "cover", display: "block" }}
+            />
           </div>
         ))}
       </section>

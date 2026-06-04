@@ -53,7 +53,10 @@ export default function Results() {
   const [data, setData] = useState({ matches: [], table: [] });
 
   useEffect(() => {
-    axios.get(`${API_URL}/results`).then((r) => setData(r.data));
+    axios.get(`${API_URL}/results`).then((r) => setData({
+      matches: (r.data.matches || []).slice(0, 5),
+      table: r.data.table || [],
+    }));
   }, []);
 
   return (

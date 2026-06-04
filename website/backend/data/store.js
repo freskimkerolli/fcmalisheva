@@ -198,18 +198,34 @@ async function getResults() {
 
 async function createResult(data) {
   const pool = getPool();
-  const { date, opponent, score, competition, venue } = data;
+  const { date, opponent, score, competition, venue, matchday } = data;
   if (pool) {
     const { rows } = await pool.query(
-      `INSERT INTO results (date, opponent, score, competition, venue)
-       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-      [date || null, opponent, score, competition, venue]
+      `INSERT INTO results (date, opponent, score, competition, venue, matchday)
+       VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+      [date || null, opponent, score, competition, venue, matchday || null]
     );
     return mapResult(rows[0]);
   }
-  const r = { id: String(Date.now()), date, opponent, score, competition, venue };
+  const r = { id: String(Date.now()), date, opponent, score, competition, venue, matchday: matchday || "" };
   sample.results.unshift(r);
   return r;
+}
+
+async function updateResult(id, data) {
+  const pool = getPool();
+  const { date, opponent, score, competition, venue, matchday } = data;
+  if (pool) {
+    const { rows } = await pool.query(
+      `UPDATE results SET date=$1, opponent=$2, score=$3, competition=$4, venue=$5, matchday=$6 WHERE id=$7 RETURNING *`,
+      [date || null, opponent, score, competition, venue, matchday || null, Number(id)]
+    );
+    return rows.length ? mapResult(rows[0]) : null;
+  }
+  const idx = sample.results.findIndex((r) => String(r.id) === String(id));
+  if (idx === -1) return null;
+  sample.results[idx] = { ...sample.results[idx], date, opponent, score, competition, venue, matchday: matchday || "" };
+  return sample.results[idx];
 }
 
 async function deleteResult(id) {
@@ -241,9 +257,155 @@ async function updateTable(tableData) {
   return [...sample.table];
 }
 
+// ── Announcements ─────────────────────────────────────────────────────────────
+async function getAnnouncements() {
+  const pool = getPool();
+  if (pool) {
+    const { rows } = await pool.query("SELECT * FROM announcements ORDER BY created_at DESC");
+    return rows;
+  }
+  return [...sample.announcements].map((a, i) => ({ id: String(i + 1), ...a }));
+}
+
+async function createAnnouncement(data) {
+  const pool = getPool();
+  const { title, title_en, content, content_en, category, category_en, date_display } = data;
+  if (pool) {
+    const { rows } = await pool.query(
+      `INSERT INTO announcements (title,title_en,content,content_en,category,category_en,date_display)
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+      [title, title_en, content, content_en, category, category_en, date_display]
+    );
+    return rows[0];
+  }
+  const a = { id: String(Date.now()), title, title_en, content, content_en, category, category_en, date_display };
+  sample.announcements.unshift(a);
+  return a;
+}
+
+async function updateAnnouncement(id, data) {
+  const pool = getPool();
+  const { title, title_en, content, content_en, category, category_en, date_display } = data;
+  if (pool) {
+    const { rows } = await pool.query(
+      `UPDATE announcements SET title=$1,title_en=$2,content=$3,content_en=$4,category=$5,category_en=$6,date_display=$7
+       WHERE id=$8 RETURNING *`,
+      [title, title_en, content, content_en, category, category_en, date_display, Number(id)]
+    );
+    return rows.length ? rows[0] : null;
+  }
+  const idx = sample.announcements.findIndex((a) => String(a.id) === String(id));
+  if (idx === -1) return null;
+  sample.announcements[idx] = { ...sample.announcements[idx], ...data };
+  return sample.announcements[idx];
+}
+
+async function deleteAnnouncement(id) {
+  const pool = getPool();
+  if (pool) {
+    const { rowCount } = await pool.query("DELETE FROM announcements WHERE id=$1", [Number(id)]);
+    return rowCount > 0;
+  }
+  const idx = sample.announcements.findIndex((a) => String(a.id) === String(id));
+  if (idx === -1) return false;
+  sample.announcements.splice(idx, 1);
+  return true;
+}
+
+// ── Upcoming Match ─────────────────────────────────────────────────────────────
+async function getUpcomingMatch() {
+  const pool = getPool();
+  if (pool) {
+    const { rows } = await pool.query("SELECT * FROM upcoming_match LIMIT 1");
+    return rows[0] || null;
+  }
+  return { id: "1", ...sample.upcomingMatch };
+}
+
+async function updateUpcomingMatch(data) {
+  const pool = getPool();
+  const { competition, matchday, stadium, home_team, home_logo, away_team, away_logo, match_date, match_time, ticket_url } = data;
+  if (pool) {
+    const existing = await pool.query("SELECT id FROM upcoming_match LIMIT 1");
+    if (existing.rows.length) {
+      const { rows } = await pool.query(
+        `UPDATE upcoming_match SET competition=$1,matchday=$2,stadium=$3,home_team=$4,home_logo=$5,
+         away_team=$6,away_logo=$7,match_date=$8,match_time=$9,ticket_url=$10 WHERE id=$11 RETURNING *`,
+        [competition, matchday, stadium, home_team, home_logo, away_team, away_logo, match_date, match_time, ticket_url, existing.rows[0].id]
+      );
+      return rows[0];
+    } else {
+      const { rows } = await pool.query(
+        `INSERT INTO upcoming_match (competition,matchday,stadium,home_team,home_logo,away_team,away_logo,match_date,match_time,ticket_url)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+        [competition, matchday, stadium, home_team, home_logo, away_team, away_logo, match_date, match_time, ticket_url]
+      );
+      return rows[0];
+    }
+  }
+  Object.assign(sample.upcomingMatch, data);
+  return sample.upcomingMatch;
+}
+
+// ── Sponsors ───────────────────────────────────────────────────────────────────
+async function getSponsors() {
+  const pool = getPool();
+  if (pool) {
+    const { rows } = await pool.query("SELECT * FROM sponsors ORDER BY sort_order");
+    return rows;
+  }
+  return sample.sponsors.map((s, i) => ({ id: String(i + 1), ...s }));
+}
+
+async function createSponsor(data) {
+  const pool = getPool();
+  const { name, logo_path, website_url, sort_order } = data;
+  if (pool) {
+    const { rows } = await pool.query(
+      "INSERT INTO sponsors (name,logo_path,website_url,sort_order) VALUES ($1,$2,$3,$4) RETURNING *",
+      [name, logo_path, website_url || "#", Number(sort_order) || 0]
+    );
+    return rows[0];
+  }
+  const s = { id: String(Date.now()), name, logo_path, website_url: website_url || "#", sort_order: Number(sort_order) || 0 };
+  sample.sponsors.push(s);
+  return s;
+}
+
+async function updateSponsor(id, data) {
+  const pool = getPool();
+  const { name, logo_path, website_url, sort_order } = data;
+  if (pool) {
+    const { rows } = await pool.query(
+      "UPDATE sponsors SET name=$1,logo_path=$2,website_url=$3,sort_order=$4 WHERE id=$5 RETURNING *",
+      [name, logo_path, website_url || "#", Number(sort_order) || 0, Number(id)]
+    );
+    return rows.length ? rows[0] : null;
+  }
+  const idx = sample.sponsors.findIndex((s) => String(s.id) === String(id));
+  if (idx === -1) return null;
+  sample.sponsors[idx] = { ...sample.sponsors[idx], ...data };
+  return sample.sponsors[idx];
+}
+
+async function deleteSponsor(id) {
+  const pool = getPool();
+  if (pool) {
+    const { rowCount } = await pool.query("DELETE FROM sponsors WHERE id=$1", [Number(id)]);
+    return rowCount > 0;
+  }
+  const idx = sample.sponsors.findIndex((s) => String(s.id) === String(id));
+  if (idx === -1) return false;
+  sample.sponsors.splice(idx, 1);
+  return true;
+}
+
 module.exports = {
   getPlayers, createPlayer, updatePlayer, deletePlayer,
   getStaff, createStaffMember, updateStaffMember, deleteStaffMember,
   getGallery, addGalleryPhoto, removeGalleryPhoto,
-  getResults, createResult, deleteResult, updateTable,
+  getResults, createResult, updateResult, deleteResult, updateTable,
+  getAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement,
+  getUpcomingMatch, updateUpcomingMatch,
+  getSponsors, createSponsor, updateSponsor, deleteSponsor,
 };

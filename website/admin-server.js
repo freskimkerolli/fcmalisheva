@@ -16,6 +16,8 @@ const ADMIN_PASS = process.env.ADMIN_PASS || "admin123";
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "admin-public")));
+app.use("/assets", express.static(path.join(__dirname, "frontend", "public", "assets")));
+app.use("/assets", express.static(path.join(__dirname, "public", "assets")));
 
 // Foto upload → frontend/public/assets/
 const uploadDir = path.join(__dirname, "frontend", "public", "assets");
@@ -122,6 +124,11 @@ app.delete("/api/staff/:id", auth, async (req, res) => {
 });
 
 // ── Galeria ────────────────────────────────────────────────────────────────────
+app.get("/api/gallery", auth, async (req, res) => {
+  try { res.json(await store.getGallery()); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.post("/api/gallery", auth, upload.single("photo"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "Nuk u ngarkua foto" });
@@ -150,6 +157,14 @@ app.post("/api/results", auth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.put("/api/results/:id", auth, async (req, res) => {
+  try {
+    const r = await store.updateResult(req.params.id, req.body);
+    if (!r) return res.status(404).json({ error: "Ndeshja nuk u gjet" });
+    res.json(r);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.delete("/api/results/:id", auth, async (req, res) => {
   try {
     const ok = await store.deleteResult(req.params.id);
@@ -161,6 +176,78 @@ app.delete("/api/results/:id", auth, async (req, res) => {
 app.put("/api/table", auth, async (req, res) => {
   try {
     res.json(await store.updateTable(req.body.tableData));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Njoftime ──────────────────────────────────────────────────────────────────
+app.get("/api/announcements", auth, async (req, res) => {
+  try { res.json(await store.getAnnouncements()); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/announcements", auth, async (req, res) => {
+  try { res.status(201).json(await store.createAnnouncement(req.body)); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put("/api/announcements/:id", auth, async (req, res) => {
+  try {
+    const a = await store.updateAnnouncement(req.params.id, req.body);
+    if (!a) return res.status(404).json({ error: "Njoftimi nuk u gjet" });
+    res.json(a);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete("/api/announcements/:id", auth, async (req, res) => {
+  try {
+    const ok = await store.deleteAnnouncement(req.params.id);
+    if (!ok) return res.status(404).json({ error: "Njoftimi nuk u gjet" });
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Ndeshja e Ardhshme ────────────────────────────────────────────────────────
+app.get("/api/upcoming-match", auth, async (req, res) => {
+  try { res.json(await store.getUpcomingMatch()); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put("/api/upcoming-match", auth, upload.fields([{ name: "home_logo_file" }, { name: "away_logo_file" }]), async (req, res) => {
+  try {
+    const data = { ...req.body };
+    if (req.files?.home_logo_file?.[0]) data.home_logo = `/assets/${req.files.home_logo_file[0].filename}`;
+    if (req.files?.away_logo_file?.[0]) data.away_logo = `/assets/${req.files.away_logo_file[0].filename}`;
+    res.json(await store.updateUpcomingMatch(data));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Sponzorët ─────────────────────────────────────────────────────────────────
+app.get("/api/sponsors", auth, async (req, res) => {
+  try { res.json(await store.getSponsors()); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post("/api/sponsors", auth, upload.single("logo_file"), async (req, res) => {
+  try {
+    const logo_path = req.file ? `/assets/${req.file.filename}` : req.body.logo_path || "";
+    res.status(201).json(await store.createSponsor({ ...req.body, logo_path }));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put("/api/sponsors/:id", auth, upload.single("logo_file"), async (req, res) => {
+  try {
+    const logo_path = req.file ? `/assets/${req.file.filename}` : req.body.logo_path;
+    const s = await store.updateSponsor(req.params.id, { ...req.body, logo_path });
+    if (!s) return res.status(404).json({ error: "Sponzori nuk u gjet" });
+    res.json(s);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete("/api/sponsors/:id", auth, async (req, res) => {
+  try {
+    const ok = await store.deleteSponsor(req.params.id);
+    if (!ok) return res.status(404).json({ error: "Sponzori nuk u gjet" });
+    res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 

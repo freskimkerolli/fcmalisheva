@@ -36,14 +36,47 @@ const SCHEMA = `
     score       VARCHAR(20),
     competition VARCHAR(100),
     venue       VARCHAR(100),
+    matchday    VARCHAR(50),
     created_at  TIMESTAMP DEFAULT NOW()
   );
+  ALTER TABLE results ADD COLUMN IF NOT EXISTS matchday VARCHAR(50);
   CREATE TABLE IF NOT EXISTS league_table (
     id       SERIAL PRIMARY KEY,
     position INTEGER,
     team     VARCHAR(100),
     points   INTEGER,
     played   INTEGER
+  );
+  CREATE TABLE IF NOT EXISTS announcements (
+    id           SERIAL PRIMARY KEY,
+    title        VARCHAR(255),
+    title_en     VARCHAR(255),
+    content      TEXT,
+    content_en   TEXT,
+    category     VARCHAR(50),
+    category_en  VARCHAR(50),
+    date_display VARCHAR(100),
+    created_at   TIMESTAMP DEFAULT NOW()
+  );
+  CREATE TABLE IF NOT EXISTS upcoming_match (
+    id           SERIAL PRIMARY KEY,
+    competition  VARCHAR(100),
+    matchday     VARCHAR(50),
+    stadium      VARCHAR(100),
+    home_team    VARCHAR(100),
+    home_logo    VARCHAR(255),
+    away_team    VARCHAR(100),
+    away_logo    VARCHAR(255),
+    match_date   VARCHAR(50),
+    match_time   VARCHAR(10),
+    ticket_url   VARCHAR(255)
+  );
+  CREATE TABLE IF NOT EXISTS sponsors (
+    id          SERIAL PRIMARY KEY,
+    name        VARCHAR(100),
+    logo_path   VARCHAR(255),
+    website_url VARCHAR(255),
+    sort_order  INTEGER DEFAULT 0
   );
 `;
 
@@ -77,6 +110,25 @@ async function seedIfEmpty(client) {
     await client.query(
       "INSERT INTO league_table (position, team, points, played) VALUES ($1,$2,$3,$4)",
       [row.position, row.team, row.points, row.played]
+    );
+  }
+  for (const a of sample.announcements) {
+    await client.query(
+      `INSERT INTO announcements (title,title_en,content,content_en,category,category_en,date_display)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      [a.title, a.title_en, a.content, a.content_en, a.category, a.category_en, a.date_display]
+    );
+  }
+  const um = sample.upcomingMatch;
+  await client.query(
+    `INSERT INTO upcoming_match (competition,matchday,stadium,home_team,home_logo,away_team,away_logo,match_date,match_time,ticket_url)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+    [um.competition,um.matchday,um.stadium,um.home_team,um.home_logo,um.away_team,um.away_logo,um.match_date,um.match_time,um.ticket_url]
+  );
+  for (const s of sample.sponsors) {
+    await client.query(
+      "INSERT INTO sponsors (name,logo_path,website_url,sort_order) VALUES ($1,$2,$3,$4)",
+      [s.name, s.logo_path, s.website_url, s.sort_order]
     );
   }
   console.log("PostgreSQL: të dhënat fillestare u ngarkuan.");

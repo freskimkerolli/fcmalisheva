@@ -9,6 +9,7 @@
     "shop": "Shop"
   },
   "home": {
+    "nextMatch": "Next Match",
     "competition": "Superliga",
     "matchday": "Matchday 8",
     "stadium": "Liman Gegaj Stadium",

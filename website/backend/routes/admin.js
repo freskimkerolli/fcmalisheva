@@ -156,4 +156,76 @@ router.put("/table", auth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ── Njoftime ──────────────────────────────────────────────────────────────────
+router.get("/announcements", auth, async (req, res) => {
+  try { res.json(await store.getAnnouncements()); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post("/announcements", auth, async (req, res) => {
+  try { res.status(201).json(await store.createAnnouncement(req.body)); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.put("/announcements/:id", auth, async (req, res) => {
+  try {
+    const a = await store.updateAnnouncement(req.params.id, req.body);
+    if (!a) return res.status(404).json({ error: "Njoftimi nuk u gjet" });
+    res.json(a);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.delete("/announcements/:id", auth, async (req, res) => {
+  try {
+    const ok = await store.deleteAnnouncement(req.params.id);
+    if (!ok) return res.status(404).json({ error: "Njoftimi nuk u gjet" });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ── Ndeshja e Ardhshme ────────────────────────────────────────────────────────
+router.get("/upcoming-match", auth, async (req, res) => {
+  try { res.json(await store.getUpcomingMatch()); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.put("/upcoming-match", auth, upload.fields([{ name: "home_logo_file" }, { name: "away_logo_file" }]), async (req, res) => {
+  try {
+    const data = { ...req.body };
+    if (req.files?.home_logo_file?.[0]) data.home_logo = `/assets/${req.files.home_logo_file[0].filename}`;
+    if (req.files?.away_logo_file?.[0]) data.away_logo = `/assets/${req.files.away_logo_file[0].filename}`;
+    res.json(await store.updateUpcomingMatch(data));
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ── Sponzorët ─────────────────────────────────────────────────────────────────
+router.get("/sponsors", auth, async (req, res) => {
+  try { res.json(await store.getSponsors()); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post("/sponsors", auth, upload.single("logo_file"), async (req, res) => {
+  try {
+    const logo_path = req.file ? `/assets/${req.file.filename}` : req.body.logo_path || "";
+    res.status(201).json(await store.createSponsor({ ...req.body, logo_path }));
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.put("/sponsors/:id", auth, upload.single("logo_file"), async (req, res) => {
+  try {
+    const logo_path = req.file ? `/assets/${req.file.filename}` : req.body.logo_path;
+    const s = await store.updateSponsor(req.params.id, { ...req.body, logo_path });
+    if (!s) return res.status(404).json({ error: "Sponzori nuk u gjet" });
+    res.json(s);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.delete("/sponsors/:id", auth, async (req, res) => {
+  try {
+    const ok = await store.deleteSponsor(req.params.id);
+    if (!ok) return res.status(404).json({ error: "Sponzori nuk u gjet" });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 module.exports = router;

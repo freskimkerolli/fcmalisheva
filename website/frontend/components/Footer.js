@@ -1,15 +1,18 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "../hooks/useTranslation";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export default function Footer() {
   const { t } = useTranslation();
-  const sponsors = [
-    { name: "Banka Ekonomike", logo: "/assets/Banka_Ekonomike-logo.png" },
-    { name: "Dijamant",        logo: "/assets/Dijamant.jpg"             },
-    { name: "Lanti-B",         logo: "/assets/Lanti-B.jpg"              },
-    { name: "MuriVinkell",     logo: "/assets/MuriVinkell.jpg"          },
-    { name: "VPD",             logo: "/assets/vpd.png"                  },
-    { name: "VSH",             logo: "/assets/VSH.png"                  },
-  ];
+  const [sponsors, setSponsors] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_URL}/sponsors`)
+      .then((r) => r.json())
+      .then((data) => setSponsors(data))
+      .catch(() => {});
+  }, []);
 
   return (
     <footer className="site-footer">
@@ -32,16 +35,18 @@ export default function Footer() {
           <div className="footer-sponsors">
             <p className="sponsors-label">{t("footer.partners")}</p>
             <div className="sponsors-grid">
-              {sponsors.map((sponsor, idx) => (
+              {sponsors.map((sponsor) => (
                 <a
-                  key={idx}
-                  href="#"
+                  key={sponsor.id}
+                  href={sponsor.website_url || "#"}
+                  target={sponsor.website_url && sponsor.website_url !== "#" ? "_blank" : undefined}
+                  rel="noreferrer"
                   className="sponsor-link"
                   title={sponsor.name}
                   style={{ width: "70px", height: "50px", display: "flex", alignItems: "center", justifyContent: "center", padding: "4px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff" }}
                 >
                   <img
-                    src={sponsor.logo}
+                    src={sponsor.logo_path}
                     alt={sponsor.name}
                     style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
                   />
@@ -60,13 +65,9 @@ export default function Footer() {
               rel="noreferrer"
               className="social-icon"
               title="Facebook"
+              style={{background:"#1877F2", border:"none", color:"#fff"}}
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
             </a>
@@ -76,15 +77,12 @@ export default function Footer() {
               rel="noreferrer"
               className="social-icon"
               title="Instagram"
+              style={{background:"radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)", border:"none", color:"#fff"}}
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.117.6c-.588.227-.9.45-1.084.636-.363.365-.594.87-.722 1.5-.06.3-.12.63-.159 1.05-.039.417-.045.541-.045 1.594s.006 1.177.041 1.594c.039.42.098.75.159 1.05.128.63.36 1.135.722 1.5.184.186.496.41 1.084.636.788.267 1.658.468 2.936.528 1.28.057 1.687.072 4.947.072s3.667-.015 4.947-.072c1.278-.06 2.148-.261 2.936-.528.588-.227.9-.45 1.084-.636.363-.365.594-.87.722-1.5.06-.3.12-.63.159-1.05.039-.417.045-.541.045-1.594s-.006-1.177-.041-1.594c-.039-.42-.098-.75-.159-1.05-.128-.63-.36-1.135-.722-1.5-.184-.186-.496-.41-1.084-.636-.788-.267-1.658-.468-2.936-.528C15.667.015 15.26 0 12 0m0 2.16c3.203 0 3.585.009 4.849.07 1.171.054 1.81.24 2.228.4.56.217.96.477 1.382.896.419.42.679.822.896 1.381.16.418.346 1.057.4 2.228.061 1.264.07 1.646.07 4.849s-.009 3.585-.07 4.849c-.054 1.171-.24 1.81-.4 2.228-.217.56-.477.96-.896 1.382-.42.419-.822.679-1.381.896-.418.16-1.057.346-2.228.4-1.264.061-1.646.07-4.849.07s-3.585-.009-4.849-.07c-1.171-.054-1.81-.24-2.228-.4-.56-.217-.96-.477-1.382-.896-.419-.42-.679-.822-.896-1.381-.16-.418-.346-1.057-.4-2.228-.061-1.264-.07-1.646-.07-4.849s.009-3.585.07-4.849c.054-1.171.24-1.81.4-2.228.217-.56.477-.96.896-1.382.42-.419.822-.679 1.381-.896.418-.16 1.057-.346 2.228-.4 1.264-.061 1.646-.07 4.849-.07" />
-                <circle cx="12" cy="12" r="3.333" fill="currentColor" />
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" fill="#fff" stroke="none" />
               </svg>
             </a>
           </div>

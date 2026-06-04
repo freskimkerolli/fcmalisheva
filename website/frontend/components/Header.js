@@ -27,8 +27,12 @@ export default function Header() {
         </nav>
 
         <div className="header-spacer">
-          <button onClick={switchLocale} className="lang-btn">
-            {locale === "sq" ? "🇬🇧 EN" : "🇦🇱 SQ"}
+          <button onClick={switchLocale} className="lang-btn" style={{display:"flex",alignItems:"center",gap:"6px"}}>
+            {locale === "en" ? (
+              <><img src="/assets/logos/Al.jpg" alt="SQ" style={{width:"22px",height:"15px",objectFit:"cover",borderRadius:"2px"}} /><span>SQ</span></>
+            ) : (
+              <><img src="/assets/logos/Gb.jpg" alt="EN" style={{width:"22px",height:"15px",objectFit:"cover",borderRadius:"2px"}} /><span>EN</span></>
+            )}
           </button>
         </div>
       </div>

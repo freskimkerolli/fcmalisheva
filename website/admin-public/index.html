@@ -18,7 +18,7 @@
     .app { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
     .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
     .app-title { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
-    .app-title span { color: var(--muted); font-size: 0.85rem; font-weight: 400; margin-left: 10px; }
+    .app-title span { color: var(--primary); font-size: 1.4rem; font-weight: 700; margin-left: 0; }
     /* Login */
     .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; }
@@ -82,6 +82,14 @@
     .err { color: var(--danger); font-size: 0.82rem; }
     .section-gap { margin-top: 32px; }
     h4 { color: var(--primary); margin-bottom: 12px; }
+    /* Site nav */
+    .site-nav { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .site-nav-label { font-size: 0.75rem; color: var(--muted); margin-right: 4px; }
+    .site-nav a { font-size: 0.8rem; font-weight: 600; color: var(--accent); padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; text-decoration: none; transition: background 0.15s; }
+    .site-nav a:hover { background: rgba(118,177,255,0.12); }
+    /* Lang toggle */
+    .lang-btn { padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px; background: transparent; color: var(--muted); font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+    .lang-btn:hover { border-color: var(--primary); color: var(--primary); }
   </style>
 </head>
 <body>
@@ -92,8 +100,86 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <script type="text/babel">
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect, useRef, useContext, createContext } = React;
 const API = '';
+
+function isTokenValid(t) {
+  if (!t) return false;
+  try {
+    const payload = JSON.parse(atob(t.split('.')[1]));
+    return payload.exp * 1000 > Date.now();
+  } catch { return false; }
+}
+
+const TRANSLATIONS = {
+  sq: {
+    title: 'FC Malisheva - Paneli i Administratorit',
+    logout: 'Dil', langBtn: '🇬🇧 EN',
+    siteLabel: 'Shiko faqen:',
+    nav: { home:'Ballina', team:'Ekipi', staff:'Stafi', results:'Rezultatet', gallery:'Galeria' },
+    tabs: ['Lojtarët','Stafi','Galeria','Rezultatet','Njoftime','Ndeshja','Sponzorët'],
+    login: { title:'Paneli i Administratorit', sub:'FC Malisheva — Hyrja e Zyrtarit', user:'Emri i përdoruesit', pass:'Fjalëkalimi', btn:'Hyr', loading:'Duke hyrë...', err:'Kredencialet janë të gabuara' },
+    players: { title:'Lojtarët', add:'+ Shto Lojtar', editTitle:'Ndrysho Lojtar', addTitle:'Shto Lojtar', edit:'Ndrysho', del:'Fshi', save:'Ruaj', saving:'Duke ruajtur...', cancel:'Anulo', confirmDel:'Fshi lojtarin?',
+      f:{ name:'Emri', pos:'Pozita', num:'Numri', nat:'Kombësia', birth:'Data e lindjes', height:'Gjatësia', weight:'Pesha', photo:'Foto' },
+      positions:['Portier','Mbrojtës i Majtë','Mbrojtës i Djathtë','Qendërmbrojtës','Mesfushor Mbrojtës','Mesfushor Qendror','Krahësor i Majtë','Krahësor i Djathtë','Sulmues Qendror'],
+      placeholderHeight:'182 cm', placeholderWeight:'76 kg', choosePos:'Zgjidh...'
+    },
+    staff: { title:'Stafi Teknik', add:'+ Shto Anëtar', editTitle:'Ndrysho Anëtar Stafi', addTitle:'Shto Anëtar Stafi', edit:'Ndrysho', del:'Fshi', save:'Ruaj', saving:'Duke ruajtur...', cancel:'Anulo', confirmDel:'Fshi anëtarin?',
+      f:{ name:'Emri', role:'Roli', email:'Email', photo:'Foto' }
+    },
+    gallery: { title:'Galeria', upload:'+ Ngarko Foto', uploading:'Duke ngarkuar...', confirmDel:'Fshi foton nga galeria?' },
+    announcements: { title:'Njoftime', add:'+ Shto Njoftim', addTitle:'Shto Njoftim', editTitle:'Ndrysho Njoftimin', edit:'Ndrysho', del:'Fshi', save:'Ruaj', saving:'Duke ruajtur...', cancel:'Anulo', confirmDel:'Fshi njoftimin?',
+      f:{ title:'Titulli (SQ)', title_en:'Titulli (EN)', content:'Përmbajtja (SQ)', content_en:'Përmbajtja (EN)', category:'Kategoria (SQ)', category_en:'Kategoria (EN)', date:'Data e shfaqjes' }
+    },
+    match: { title:'Ndeshja e Ardhshme', save:'Ruaj Ndeshjen', saving:'Duke ruajtur...', ticketSaved:'U ruajt!',
+      f:{ comp:'Gara', matchday:'Java / Dita', stadium:'Stadiumi', home:'Ekipi vendas', homeLogo:'Logo vendas', away:'Ekipi mysafir', awayLogo:'Logo mysafir', date:'Data', time:'Ora', ticketUrl:'Linku i biletave' }
+    },
+    sponsors: { title:'Sponzorët', add:'+ Shto Sponzor', addTitle:'Shto Sponzor', editTitle:'Ndrysho Sponzorin', edit:'Ndrysho', del:'Fshi', save:'Ruaj', saving:'Duke ruajtur...', cancel:'Anulo', confirmDel:'Fshi sponzorin?',
+      f:{ name:'Emri', logo:'Logo (ngarko ose rrugë)', website:'Website URL', order:'Rendi' }
+    },
+    results: { title:'Rezultatet', add:'+ Shto Ndeshje', addTitle:'Shto Ndeshje', editTitle:'Ndrysho Ndeshjen', del:'Fshi', edit:'Ndrysho', save:'Ruaj', saving:'Duke ruajtur...', cancel:'Anulo', confirmDel:'Fshi ndeshjen?',
+      tableTitle:'Tabela e Ligës',
+      f:{ date:'Data', matchday:'Java / Dita', opp:'Kundërshtari', score:'Rezultati', comp:'Gara', venue:'Fusha', compPH:'p.sh. Albi Mall Superliga', venuePH:'Fushë e Jashtme' },
+      th:{ pos:'#', team:'Ekipi', played:'Nd', pts:'Pikë' }
+    }
+  },
+  en: {
+    title: 'FC Malisheva - Admin Panel',
+    logout: 'Logout', langBtn: '🇦🇱 SQ',
+    siteLabel: 'View site:',
+    nav: { home:'Home', team:'Team', staff:'Staff', results:'Results', gallery:'Gallery' },
+    tabs: ['Players','Staff','Gallery','Results','Announcements','Match','Sponsors'],
+    login: { title:'Admin Panel', sub:'FC Malisheva — Staff Login', user:'Username', pass:'Password', btn:'Login', loading:'Logging in...', err:'Invalid credentials' },
+    players: { title:'Players', add:'+ Add Player', editTitle:'Edit Player', addTitle:'Add Player', edit:'Edit', del:'Delete', save:'Save', saving:'Saving...', cancel:'Cancel', confirmDel:'Delete this player?',
+      f:{ name:'Name', pos:'Position', num:'Number', nat:'Nationality', birth:'Date of birth', height:'Height', weight:'Weight', photo:'Photo' },
+      positions:['Goalkeeper','Left Back','Right Back','Centre Back','Defensive Mid','Central Mid','Left Winger','Right Winger','Centre Forward'],
+      placeholderHeight:'e.g. 182 cm', placeholderWeight:'e.g. 76 kg', choosePos:'Choose...'
+    },
+    staff: { title:'Technical Staff', add:'+ Add Member', editTitle:'Edit Staff Member', addTitle:'Add Staff Member', edit:'Edit', del:'Delete', save:'Save', saving:'Saving...', cancel:'Cancel', confirmDel:'Delete this member?',
+      f:{ name:'Name', role:'Role', email:'Email', photo:'Photo' }
+    },
+    gallery: { title:'Gallery', upload:'+ Upload Photo', uploading:'Uploading...', confirmDel:'Remove photo from gallery?' },
+    announcements: { title:'Announcements', add:'+ Add Announcement', addTitle:'Add Announcement', editTitle:'Edit Announcement', edit:'Edit', del:'Delete', save:'Save', saving:'Saving...', cancel:'Cancel', confirmDel:'Delete this announcement?',
+      f:{ title:'Title (SQ)', title_en:'Title (EN)', content:'Content (SQ)', content_en:'Content (EN)', category:'Category (SQ)', category_en:'Category (EN)', date:'Display date' }
+    },
+    match: { title:'Upcoming Match', save:'Save Match', saving:'Saving...', ticketSaved:'Saved!',
+      f:{ comp:'Competition', matchday:'Matchday', stadium:'Stadium', home:'Home team', homeLogo:'Home logo', away:'Away team', awayLogo:'Away logo', date:'Date', time:'Time', ticketUrl:'Ticket link' }
+    },
+    sponsors: { title:'Sponsors', add:'+ Add Sponsor', addTitle:'Add Sponsor', editTitle:'Edit Sponsor', edit:'Edit', del:'Delete', save:'Save', saving:'Saving...', cancel:'Cancel', confirmDel:'Delete this sponsor?',
+      f:{ name:'Name', logo:'Logo (upload or path)', website:'Website URL', order:'Order' }
+    },
+    results: { title:'Results', add:'+ Add Match', addTitle:'Add Match', editTitle:'Edit Match', del:'Delete', edit:'Edit', save:'Save', saving:'Saving...', cancel:'Cancel', confirmDel:'Delete this match?',
+      tableTitle:'League Table',
+      f:{ date:'Date', matchday:'Matchday', opp:'Opponent', score:'Score', comp:'Competition', venue:'Venue', compPH:'e.g. Albi Mall Superliga', venuePH:'e.g. Away' },
+      th:{ pos:'#', team:'Club', played:'MP', pts:'Pts' }
+    }
+  }
+};
+
+const LangCtx = createContext({ t: k => k, lang: 'sq' });
+function useLang() { return useContext(LangCtx); }
+
+let _forceLogout = null;
 
 function req(method, url, body, token) {
   const headers = {};
@@ -105,6 +191,11 @@ function req(method, url, body, token) {
     body: body instanceof FormData ? body : (body ? JSON.stringify(body) : undefined),
   }).then(async r => {
     const data = await r.json();
+    if (r.status === 401) {
+      localStorage.removeItem('admin_token');
+      if (_forceLogout) _forceLogout();
+      throw new Error(data.error || 'Sesioni skadoi');
+    }
     if (!r.ok) throw new Error(data.error || 'Gabim');
     return data;
   });
@@ -147,7 +238,8 @@ function Modal({ title, onClose, children }) {
 }
 
 /* ── LOGIN ── */
-function Login({ onLogin }) {
+function Login({ onLogin, lang, setLang }) {
+  const tr = TRANSLATIONS[lang].login;
   const [f, setF] = useState({ username:'', password:'' });
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
@@ -157,19 +249,27 @@ function Login({ onLogin }) {
       const data = await req('POST', '/api/login', f);
       localStorage.setItem('admin_token', data.token);
       onLogin(data.token);
-    } catch(e) { setErr(e.message); }
+    } catch(e) { setErr(TRANSLATIONS[lang].login.err); }
     finally { setLoading(false); }
   }
   return (
     <div className="login-wrap">
       <div className="login-card">
-        <h2>Paneli i Administratorit</h2>
-        <p>FC Malisheva — Hyrja e Zyrtarit</p>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}}>
+          <h2 style={{margin:0}}>{tr.title}</h2>
+          <button className="lang-btn" onClick={() => setLang(lang==='sq'?'en':'sq')} style={{display:'flex',alignItems:'center',gap:'6px'}}>
+            {lang === 'sq'
+              ? <><img src="/assets/logos/Gb.jpg" alt="EN" style={{width:'22px',height:'15px',objectFit:'cover',borderRadius:'2px'}} /><span>EN</span></>
+              : <><img src="/assets/logos/Al.jpg" alt="SQ" style={{width:'22px',height:'15px',objectFit:'cover',borderRadius:'2px'}} /><span>SQ</span></>
+            }
+          </button>
+        </div>
+        <p>{tr.sub}</p>
         <form className="form-col" onSubmit={submit}>
-          <input className="inp" placeholder="Emri i përdoruesit" value={f.username} onChange={e => setF({...f, username:e.target.value})} required />
-          <input className="inp" type="password" placeholder="Fjalëkalimi" value={f.password} onChange={e => setF({...f, password:e.target.value})} required />
+          <input className="inp" placeholder={tr.user} value={f.username} onChange={e => setF({...f, username:e.target.value})} required />
+          <input className="inp" type="password" placeholder={tr.pass} value={f.password} onChange={e => setF({...f, password:e.target.value})} required />
           {err && <p className="err">{err}</p>}
-          <button className="btn btn-primary" type="submit" disabled={loading}>{loading ? 'Duke hyrë...' : 'Hyr'}</button>
+          <button className="btn btn-primary" type="submit" disabled={loading}>{loading ? tr.loading : tr.btn}</button>
         </form>
       </div>
     </div>
@@ -178,6 +278,8 @@ function Login({ onLogin }) {
 
 /* ── PLAYERS ── */
 function PlayersTab({ token }) {
+  const { t } = useLang();
+  const tr = key => t(`players.${key}`);
   const [players, setPlayers] = useState([]);
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState({});
@@ -207,7 +309,7 @@ function PlayersTab({ token }) {
   }
 
   async function del(id) {
-    if (!confirm('Fshi lojtarin?')) return;
+    if (!confirm(tr('confirmDel'))) return;
     await req('DELETE', `/api/players/${id}`, null, token);
     load();
   }
@@ -215,8 +317,8 @@ function PlayersTab({ token }) {
   return (
     <div>
       <div className="tab-head">
-        <h3>Lojtarët ({players.length})</h3>
-        <button className="btn btn-primary" onClick={openAdd}>+ Shto Lojtar</button>
+        <h3>{tr('title')} ({players.length})</h3>
+        <button className="btn btn-primary" onClick={openAdd}>{tr('add')}</button>
       </div>
       <div className="item-list">
         {players.map(p => (
@@ -228,35 +330,35 @@ function PlayersTab({ token }) {
               <span className="card-sub">{p.nationality}</span>
             </div>
             <div className="card-actions">
-              <button className="btn-sm" onClick={() => openEdit(p)}>Ndrysho</button>
-              <button className="btn-sm btn-danger" onClick={() => del(p.id)}>Fshi</button>
+              <button className="btn-sm" onClick={() => openEdit(p)}>{tr('edit')}</button>
+              <button className="btn-sm btn-danger" onClick={() => del(p.id)}>{tr('del')}</button>
             </div>
           </div>
         ))}
       </div>
 
       {modal && (
-        <Modal title={modal.mode==='add' ? 'Shto Lojtar' : 'Ndrysho Lojtar'} onClose={() => setModal(null)}>
+        <Modal title={modal.mode==='add' ? tr('addTitle') : tr('editTitle')} onClose={() => setModal(null)}>
           <div className="form-grid">
-            <label className="label">Emri<input className="inp" value={form.name||''} onChange={e=>setForm({...form,name:e.target.value})} /></label>
-            <label className="label">Pozita
+            <label className="label">{tr('f.name')}<input className="inp" value={form.name||''} onChange={e=>setForm({...form,name:e.target.value})} /></label>
+            <label className="label">{tr('f.pos')}
               <select className="inp" value={form.position||''} onChange={e=>setForm({...form,position:e.target.value})}>
-                <option value="">Zgjidh...</option>
-                {['Portier','Mbrojtës','Mesfushor','Sulmues'].map(p=><option key={p}>{p}</option>)}
+                <option value="">{tr('choosePos')}</option>
+                {t('players.positions').map(p=><option key={p}>{p}</option>)}
               </select>
             </label>
-            <label className="label">Numri<input className="inp" type="number" value={form.number||''} onChange={e=>setForm({...form,number:e.target.value})} /></label>
-            <label className="label">Kombësia<input className="inp" value={form.nationality||''} onChange={e=>setForm({...form,nationality:e.target.value})} /></label>
-            <label className="label">Data e lindjes<input className="inp" type="date" value={form.birthDate||''} onChange={e=>setForm({...form,birthDate:e.target.value})} /></label>
-            <label className="label">Gjatësia<input className="inp" placeholder="182 cm" value={form.height||''} onChange={e=>setForm({...form,height:e.target.value})} /></label>
-            <label className="label">Pesha<input className="inp" placeholder="76 kg" value={form.weight||''} onChange={e=>setForm({...form,weight:e.target.value})} /></label>
-            <label className="label">Foto
+            <label className="label">{tr('f.num')}<input className="inp" type="number" value={form.number||''} onChange={e=>setForm({...form,number:e.target.value})} /></label>
+            <label className="label">{tr('f.nat')}<input className="inp" value={form.nationality||''} onChange={e=>setForm({...form,nationality:e.target.value})} /></label>
+            <label className="label">{tr('f.birth')}<input className="inp" type="date" value={form.birthDate||''} onChange={e=>setForm({...form,birthDate:e.target.value})} /></label>
+            <label className="label">{tr('f.height')}<input className="inp" placeholder={tr('placeholderHeight')} value={form.height||''} onChange={e=>setForm({...form,height:e.target.value})} /></label>
+            <label className="label">{tr('f.weight')}<input className="inp" placeholder={tr('placeholderWeight')} value={form.weight||''} onChange={e=>setForm({...form,weight:e.target.value})} /></label>
+            <label className="label">{tr('f.photo')}
               <PhotoUpload current={form.photo ? `http://localhost:4000${form.photo}` : ''} onChange={setPhotoFile} />
             </label>
           </div>
           <div className="modal-foot">
-            <button className="btn btn-outline" onClick={() => setModal(null)}>Anulo</button>
-            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? 'Duke ruajtur...' : 'Ruaj'}</button>
+            <button className="btn btn-outline" onClick={() => setModal(null)}>{tr('cancel')}</button>
+            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? tr('saving') : tr('save')}</button>
           </div>
         </Modal>
       )}
@@ -266,6 +368,8 @@ function PlayersTab({ token }) {
 
 /* ── STAFF ── */
 function StaffTab({ token }) {
+  const { t } = useLang();
+  const tr = key => t(`staff.${key}`);
   const [staff, setStaff] = useState([]);
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState({});
@@ -292,7 +396,7 @@ function StaffTab({ token }) {
   }
 
   async function del(id) {
-    if (!confirm('Fshi anëtarin?')) return;
+    if (!confirm(tr('confirmDel'))) return;
     await req('DELETE', `/api/staff/${id}`, null, token);
     load();
   }
@@ -300,8 +404,8 @@ function StaffTab({ token }) {
   return (
     <div>
       <div className="tab-head">
-        <h3>Stafi Teknik ({staff.length})</h3>
-        <button className="btn btn-primary" onClick={openAdd}>+ Shto Anëtar</button>
+        <h3>{tr('title')} ({staff.length})</h3>
+        <button className="btn btn-primary" onClick={openAdd}>{tr('add')}</button>
       </div>
       <div className="item-list">
         {staff.map(s => (
@@ -313,26 +417,26 @@ function StaffTab({ token }) {
               <span className="card-sub">{s.email}</span>
             </div>
             <div className="card-actions">
-              <button className="btn-sm" onClick={() => openEdit(s)}>Ndrysho</button>
-              <button className="btn-sm btn-danger" onClick={() => del(s.id)}>Fshi</button>
+              <button className="btn-sm" onClick={() => openEdit(s)}>{tr('edit')}</button>
+              <button className="btn-sm btn-danger" onClick={() => del(s.id)}>{tr('del')}</button>
             </div>
           </div>
         ))}
       </div>
 
       {modal && (
-        <Modal title={modal.mode==='add' ? 'Shto Anëtar Stafi' : 'Ndrysho Anëtar Stafi'} onClose={() => setModal(null)}>
+        <Modal title={modal.mode==='add' ? tr('addTitle') : tr('editTitle')} onClose={() => setModal(null)}>
           <div className="form-grid">
-            <label className="label">Emri<input className="inp" value={form.name||''} onChange={e=>setForm({...form,name:e.target.value})} /></label>
-            <label className="label">Roli<input className="inp" value={form.role||''} onChange={e=>setForm({...form,role:e.target.value})} /></label>
-            <label className="label" style={{gridColumn:'1/-1'}}>Email<input className="inp" type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})} /></label>
-            <label className="label" style={{gridColumn:'1/-1'}}>Foto
+            <label className="label">{tr('f.name')}<input className="inp" value={form.name||''} onChange={e=>setForm({...form,name:e.target.value})} /></label>
+            <label className="label">{tr('f.role')}<input className="inp" value={form.role||''} onChange={e=>setForm({...form,role:e.target.value})} /></label>
+            <label className="label" style={{gridColumn:'1/-1'}}>{tr('f.email')}<input className="inp" type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})} /></label>
+            <label className="label" style={{gridColumn:'1/-1'}}>{tr('f.photo')}
               <PhotoUpload current={form.photo ? `http://localhost:4000${form.photo}` : ''} onChange={setPhotoFile} />
             </label>
           </div>
           <div className="modal-foot">
-            <button className="btn btn-outline" onClick={() => setModal(null)}>Anulo</button>
-            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? 'Duke ruajtur...' : 'Ruaj'}</button>
+            <button className="btn btn-outline" onClick={() => setModal(null)}>{tr('cancel')}</button>
+            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? tr('saving') : tr('save')}</button>
           </div>
         </Modal>
       )}
@@ -342,6 +446,8 @@ function StaffTab({ token }) {
 
 /* ── GALLERY ── */
 function GalleryTab({ token }) {
+  const { t } = useLang();
+  const tr = key => t(`gallery.${key}`);
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef();
@@ -360,7 +466,7 @@ function GalleryTab({ token }) {
   }
 
   async function del(url) {
-    if (!confirm('Fshi foton nga galeria?')) return;
+    if (!confirm(tr('confirmDel'))) return;
     await req('DELETE', '/api/gallery', { url }, token);
     load();
   }
@@ -368,9 +474,9 @@ function GalleryTab({ token }) {
   return (
     <div>
       <div className="tab-head">
-        <h3>Galeria ({images.length} foto)</h3>
+        <h3>{tr('title')} ({images.length})</h3>
         <button className="btn btn-primary" onClick={() => fileRef.current.click()} disabled={uploading}>
-          {uploading ? 'Duke ngarkuar...' : '+ Ngarko Foto'}
+          {uploading ? tr('uploading') : tr('upload')}
         </button>
         <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={upload} />
       </div>
@@ -378,7 +484,7 @@ function GalleryTab({ token }) {
         {images.map((url, i) => (
           <div className="gallery-item" key={i}>
             <img className="gallery-img" src={`http://localhost:4000${url}`} onError={e => e.target.src='https://placehold.co/150x110/121a2d/9cb1d1?text=foto'} />
-            <button className="gallery-del" onClick={() => del(url)} title="Fshi">✕</button>
+            <button className="gallery-del" onClick={() => del(url)} title="✕">✕</button>
           </div>
         ))}
       </div>
@@ -387,49 +493,62 @@ function GalleryTab({ token }) {
 }
 
 /* ── RESULTS ── */
+const EMPTY_RESULT = { date:'', opponent:'', score:'', competition:'Albi Mall Superliga', venue:'', matchday:'' };
+
 function ResultsTab({ token }) {
+  const { t } = useLang();
+  const tr = key => t(`results.${key}`);
   const [matches, setMatches] = useState([]);
   const [table, setTable] = useState([]);
-  const [modal, setModal] = useState(false);
-  const [form, setForm] = useState({ date:'', opponent:'', score:'', competition:'Superliga', venue:'' });
+  const [modal, setModal] = useState(null);
+  const [form, setForm] = useState(EMPTY_RESULT);
   const [saving, setSaving] = useState(false);
 
   const load = () => req('GET', '/api/results', null, token).then(d => { setMatches(d.matches); setTable(d.table); });
   useEffect(() => { load(); }, []);
 
-  async function add() {
+  function openAdd() { setForm(EMPTY_RESULT); setModal({ mode:'add' }); }
+  function openEdit(m) { setForm({ date:m.date||'', opponent:m.opponent||'', score:m.score||'', competition:m.competition||'Albi Mall Superliga', venue:m.venue||'', matchday:m.matchday||'' }); setModal({ mode:'edit', id:m.id }); }
+
+  async function save() {
     setSaving(true);
-    try { await req('POST', '/api/results', form, token); await load(); setModal(false); setForm({ date:'', opponent:'', score:'', competition:'Superliga', venue:'' }); }
-    catch(e) { alert(e.message); }
+    try {
+      if (modal.mode === 'add') await req('POST', '/api/results', form, token);
+      else await req('PUT', `/api/results/${modal.id}`, form, token);
+      await load(); setModal(null); setForm(EMPTY_RESULT);
+    } catch(e) { alert(e.message); }
     finally { setSaving(false); }
   }
 
   async function del(id) {
-    if (!confirm('Fshi ndeshjen?')) return;
+    if (!confirm(tr('confirmDel'))) return;
     await req('DELETE', `/api/results/${id}`, null, token); load();
   }
 
   return (
     <div>
       <div className="tab-head">
-        <h3>Rezultatet ({matches.length} ndeshje)</h3>
-        <button className="btn btn-primary" onClick={() => setModal(true)}>+ Shto Ndeshje</button>
+        <h3>{tr('title')} ({matches.length})</h3>
+        <button className="btn btn-primary" onClick={openAdd}>{tr('add')}</button>
       </div>
       <div className="item-list">
         {matches.map(m => (
           <div className="result-row" key={m.id}>
             <span className="result-date">{m.date}</span>
             <span className="result-info"><b>FC Malisheva</b> vs <b>{m.opponent}</b> <span className="result-score">{m.score}</span></span>
-            <span className="result-meta">{m.competition} · {m.venue}</span>
-            <button className="btn-sm btn-danger" onClick={() => del(m.id)}>Fshi</button>
+            <span className="result-meta">{m.matchday ? `${m.matchday} · ` : ''}{m.competition}</span>
+            <div style={{display:'flex',gap:'6px',flexShrink:0}}>
+              <button className="btn-sm" onClick={() => openEdit(m)}>{tr('edit')}</button>
+              <button className="btn-sm btn-danger" onClick={() => del(m.id)}>{tr('del')}</button>
+            </div>
           </div>
         ))}
       </div>
 
       <div className="section-gap">
-        <h4>Tabela e Ligës</h4>
+        <h4>{tr('tableTitle')}</h4>
         <table>
-          <thead><tr><th>#</th><th>Ekipi</th><th>Ndeshje</th><th>Pikë</th></tr></thead>
+          <thead><tr><th>{tr('th.pos')}</th><th>{tr('th.team')}</th><th>{tr('th.played')}</th><th>{tr('th.pts')}</th></tr></thead>
           <tbody>
             {table.map((r, i) => (
               <tr key={i} className={r.team === 'FC Malisheva' ? 'hl' : ''}>
@@ -441,17 +560,238 @@ function ResultsTab({ token }) {
       </div>
 
       {modal && (
-        <Modal title="Shto Ndeshje" onClose={() => setModal(false)}>
+        <Modal title={modal.mode==='add' ? tr('addTitle') : t('results.editTitle')} onClose={() => setModal(null)}>
           <div className="form-grid">
-            <label className="label">Data<input className="inp" type="date" value={form.date} onChange={e=>setForm({...form,date:e.target.value})} /></label>
-            <label className="label">Kundërshtari<input className="inp" placeholder="p.sh. Drita" value={form.opponent} onChange={e=>setForm({...form,opponent:e.target.value})} /></label>
-            <label className="label">Rezultati<input className="inp" placeholder="2-1" value={form.score} onChange={e=>setForm({...form,score:e.target.value})} /></label>
-            <label className="label">Gara<input className="inp" value={form.competition} onChange={e=>setForm({...form,competition:e.target.value})} /></label>
-            <label className="label" style={{gridColumn:'1/-1'}}>Fusha<input className="inp" placeholder="Fushë e Jashtme" value={form.venue} onChange={e=>setForm({...form,venue:e.target.value})} /></label>
+            <label className="label">{tr('f.date')}<input className="inp" type="date" value={form.date} onChange={e=>setForm({...form,date:e.target.value})} /></label>
+            <label className="label">{tr('f.matchday')}<input className="inp" placeholder="p.sh. Java 36" value={form.matchday} onChange={e=>setForm({...form,matchday:e.target.value})} /></label>
+            <label className="label">{tr('f.opp')}<input className="inp" placeholder="p.sh. Drita" value={form.opponent} onChange={e=>setForm({...form,opponent:e.target.value})} /></label>
+            <label className="label">{tr('f.score')}<input className="inp" placeholder="2-1" value={form.score} onChange={e=>setForm({...form,score:e.target.value})} /></label>
+            <label className="label">{tr('f.comp')}<input className="inp" placeholder={tr('f.compPH')} value={form.competition} onChange={e=>setForm({...form,competition:e.target.value})} /></label>
+            <label className="label">{tr('f.venue')}<input className="inp" placeholder={tr('f.venuePH')} value={form.venue} onChange={e=>setForm({...form,venue:e.target.value})} /></label>
           </div>
           <div className="modal-foot">
-            <button className="btn btn-outline" onClick={() => setModal(false)}>Anulo</button>
-            <button className="btn btn-primary" onClick={add} disabled={saving}>{saving ? 'Duke ruajtur...' : 'Ruaj'}</button>
+            <button className="btn btn-outline" onClick={() => setModal(null)}>{tr('cancel')}</button>
+            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? tr('saving') : tr('save')}</button>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+/* ── ANNOUNCEMENTS ── */
+function AnnouncementsTab({ token }) {
+  const { t } = useLang();
+  const tr = key => t(`announcements.${key}`);
+  const [items, setItems] = useState([]);
+  const [modal, setModal] = useState(null);
+  const [form, setForm] = useState({});
+  const [saving, setSaving] = useState(false);
+
+  const load = () => req('GET', '/api/announcements', null, token).then(setItems);
+  useEffect(() => { load(); }, []);
+
+  const emptyForm = { title:'', title_en:'', content:'', content_en:'', category:'', category_en:'', date_display:'' };
+  function openAdd() { setForm(emptyForm); setModal({ mode:'add' }); }
+  function openEdit(a) { setForm({...a}); setModal({ mode:'edit', id:a.id }); }
+
+  async function save() {
+    setSaving(true);
+    try {
+      if (modal.mode === 'add') await req('POST', '/api/announcements', form, token);
+      else await req('PUT', `/api/announcements/${modal.id}`, form, token);
+      await load(); setModal(null);
+    } catch(e) { alert(e.message); }
+    finally { setSaving(false); }
+  }
+
+  async function del(id) {
+    if (!confirm(tr('confirmDel'))) return;
+    await req('DELETE', `/api/announcements/${id}`, null, token); load();
+  }
+
+  const f = t('announcements.f');
+  return (
+    <div>
+      <div className="tab-head">
+        <h3>{tr('title')} ({items.length})</h3>
+        <button className="btn btn-primary" onClick={openAdd}>{tr('add')}</button>
+      </div>
+      <div className="item-list">
+        {items.map(a => (
+          <div className="item-card" key={a.id} style={{flexDirection:'column',alignItems:'flex-start',gap:'6px'}}>
+            <div style={{display:'flex',justifyContent:'space-between',width:'100%',alignItems:'center'}}>
+              <div>
+                <span className="card-name">{a.title}</span>
+                <span className="card-sub" style={{marginLeft:'8px'}}>{a.category} · {a.date_display}</span>
+              </div>
+              <div className="card-actions">
+                <button className="btn-sm" onClick={() => openEdit(a)}>{tr('edit')}</button>
+                <button className="btn-sm btn-danger" onClick={() => del(a.id)}>{tr('del')}</button>
+              </div>
+            </div>
+            <p style={{fontSize:'0.8rem',color:'var(--muted)',margin:0}}>{a.content}</p>
+          </div>
+        ))}
+      </div>
+
+      {modal && (
+        <Modal title={modal.mode==='add' ? tr('addTitle') : tr('editTitle')} onClose={() => setModal(null)}>
+          <div className="form-grid">
+            <label className="label">{f.title}<input className="inp" value={form.title||''} onChange={e=>setForm({...form,title:e.target.value})} /></label>
+            <label className="label">{f.title_en}<input className="inp" value={form.title_en||''} onChange={e=>setForm({...form,title_en:e.target.value})} /></label>
+            <label className="label">{f.category}<input className="inp" value={form.category||''} onChange={e=>setForm({...form,category:e.target.value})} /></label>
+            <label className="label">{f.category_en}<input className="inp" value={form.category_en||''} onChange={e=>setForm({...form,category_en:e.target.value})} /></label>
+            <label className="label">{f.date}<input className="inp" value={form.date_display||''} placeholder="p.sh. 5 qershor 2026" onChange={e=>setForm({...form,date_display:e.target.value})} /></label>
+            <div />
+            <label className="label" style={{gridColumn:'1/-1'}}>{f.content}<textarea className="inp" rows="3" value={form.content||''} onChange={e=>setForm({...form,content:e.target.value})} /></label>
+            <label className="label" style={{gridColumn:'1/-1'}}>{f.content_en}<textarea className="inp" rows="3" value={form.content_en||''} onChange={e=>setForm({...form,content_en:e.target.value})} /></label>
+          </div>
+          <div className="modal-foot">
+            <button className="btn btn-outline" onClick={() => setModal(null)}>{tr('cancel')}</button>
+            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? tr('saving') : tr('save')}</button>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+/* ── UPCOMING MATCH ── */
+function MatchTab({ token }) {
+  const { t } = useLang();
+  const tr = key => t(`match.${key}`);
+  const f = t('match.f');
+  const [form, setForm] = useState({ competition:'', matchday:'', stadium:'', home_team:'', home_logo:'', away_team:'', away_logo:'', match_date:'', match_time:'', ticket_url:'' });
+  const [homeFile, setHomeFile] = useState(null);
+  const [awayFile, setAwayFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const homeRef = useRef(); const awayRef = useRef();
+
+  useEffect(() => {
+    req('GET', '/api/upcoming-match', null, token).then(d => { if (d) setForm(d); }).catch(() => {});
+  }, []);
+
+  async function save() {
+    setSaving(true);
+    try {
+      const fd = new FormData();
+      Object.entries(form).forEach(([k,v]) => fd.append(k, v ?? ''));
+      if (homeFile) fd.append('home_logo_file', homeFile);
+      if (awayFile) fd.append('away_logo_file', awayFile);
+      const updated = await req('PUT', '/api/upcoming-match', fd, token);
+      setForm(updated);
+      alert(tr('ticketSaved'));
+    } catch(e) { alert(e.message); }
+    finally { setSaving(false); }
+  }
+
+  return (
+    <div>
+      <div className="tab-head"><h3>{tr('title')}</h3></div>
+      <div className="form-grid" style={{maxWidth:'600px'}}>
+        <label className="label">{f.comp}<input className="inp" value={form.competition||''} onChange={e=>setForm({...form,competition:e.target.value})} /></label>
+        <label className="label">{f.matchday}<input className="inp" value={form.matchday||''} onChange={e=>setForm({...form,matchday:e.target.value})} /></label>
+        <label className="label" style={{gridColumn:'1/-1'}}>{f.stadium}<input className="inp" value={form.stadium||''} onChange={e=>setForm({...form,stadium:e.target.value})} /></label>
+        <label className="label">{f.home}
+          <input className="inp" value={form.home_team||''} onChange={e=>setForm({...form,home_team:e.target.value})} />
+          <div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'6px'}}>
+            {form.home_logo && <img src={`http://localhost:4000${form.home_logo}`} style={{width:'36px',height:'36px',objectFit:'contain'}} />}
+            <button type="button" className="btn-sm" onClick={() => homeRef.current.click()}>{f.homeLogo}</button>
+            <input ref={homeRef} type="file" accept="image/*" style={{display:'none'}} onChange={e=>setHomeFile(e.target.files[0])} />
+            {homeFile && <span style={{fontSize:'0.75rem',color:'var(--muted)'}}>{homeFile.name}</span>}
+          </div>
+        </label>
+        <label className="label">{f.away}
+          <input className="inp" value={form.away_team||''} onChange={e=>setForm({...form,away_team:e.target.value})} />
+          <div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'6px'}}>
+            {form.away_logo && <img src={`http://localhost:4000${form.away_logo}`} style={{width:'36px',height:'36px',objectFit:'contain'}} />}
+            <button type="button" className="btn-sm" onClick={() => awayRef.current.click()}>{f.awayLogo}</button>
+            <input ref={awayRef} type="file" accept="image/*" style={{display:'none'}} onChange={e=>setAwayFile(e.target.files[0])} />
+            {awayFile && <span style={{fontSize:'0.75rem',color:'var(--muted)'}}>{awayFile.name}</span>}
+          </div>
+        </label>
+        <label className="label">{f.date}<input className="inp" value={form.match_date||''} placeholder="5 qershor 2026" onChange={e=>setForm({...form,match_date:e.target.value})} /></label>
+        <label className="label">{f.time}<input className="inp" value={form.match_time||''} placeholder="19:00" onChange={e=>setForm({...form,match_time:e.target.value})} /></label>
+        <label className="label" style={{gridColumn:'1/-1'}}>{f.ticketUrl}<input className="inp" value={form.ticket_url||''} placeholder="https://..." onChange={e=>setForm({...form,ticket_url:e.target.value})} /></label>
+      </div>
+      <div style={{marginTop:'24px'}}>
+        <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? tr('saving') : tr('save')}</button>
+      </div>
+    </div>
+  );
+}
+
+/* ── SPONSORS ── */
+function SponsorsTab({ token }) {
+  const { t } = useLang();
+  const tr = key => t(`sponsors.${key}`);
+  const f = t('sponsors.f');
+  const [items, setItems] = useState([]);
+  const [modal, setModal] = useState(null);
+  const [form, setForm] = useState({});
+  const [logoFile, setLogoFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const load = () => req('GET', '/api/sponsors', null, token).then(setItems);
+  useEffect(() => { load(); }, []);
+
+  function openAdd() { setForm({ name:'', logo_path:'', website_url:'#', sort_order:'0' }); setLogoFile(null); setModal({ mode:'add' }); }
+  function openEdit(s) { setForm({...s, sort_order: String(s.sort_order||0)}); setLogoFile(null); setModal({ mode:'edit', id:s.id }); }
+
+  async function save() {
+    setSaving(true);
+    try {
+      const fd = new FormData();
+      Object.entries(form).forEach(([k,v]) => fd.append(k, v ?? ''));
+      if (logoFile) fd.append('logo_file', logoFile);
+      if (modal.mode === 'add') await req('POST', '/api/sponsors', fd, token);
+      else await req('PUT', `/api/sponsors/${modal.id}`, fd, token);
+      await load(); setModal(null);
+    } catch(e) { alert(e.message); }
+    finally { setSaving(false); }
+  }
+
+  async function del(id) {
+    if (!confirm(tr('confirmDel'))) return;
+    await req('DELETE', `/api/sponsors/${id}`, null, token); load();
+  }
+
+  return (
+    <div>
+      <div className="tab-head">
+        <h3>{tr('title')} ({items.length})</h3>
+        <button className="btn btn-primary" onClick={openAdd}>{tr('add')}</button>
+      </div>
+      <div className="item-list">
+        {items.map(s => (
+          <div className="item-card" key={s.id}>
+            <img src={`http://localhost:4000${s.logo_path}`} alt={s.name} style={{width:'52px',height:'40px',objectFit:'contain',background:'#fff',borderRadius:'6px',padding:'2px'}} onError={e=>e.target.style.display='none'} />
+            <div className="card-info">
+              <span className="card-name">{s.name}</span>
+              <span className="card-sub">{s.website_url}</span>
+            </div>
+            <div className="card-actions">
+              <button className="btn-sm" onClick={() => openEdit(s)}>{tr('edit')}</button>
+              <button className="btn-sm btn-danger" onClick={() => del(s.id)}>{tr('del')}</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {modal && (
+        <Modal title={modal.mode==='add' ? tr('addTitle') : tr('editTitle')} onClose={() => setModal(null)}>
+          <div className="form-grid">
+            <label className="label">{f.name}<input className="inp" value={form.name||''} onChange={e=>setForm({...form,name:e.target.value})} /></label>
+            <label className="label">{f.order}<input className="inp" type="number" value={form.sort_order||'0'} onChange={e=>setForm({...form,sort_order:e.target.value})} /></label>
+            <label className="label" style={{gridColumn:'1/-1'}}>{f.website}<input className="inp" value={form.website_url||''} onChange={e=>setForm({...form,website_url:e.target.value})} /></label>
+            <label className="label" style={{gridColumn:'1/-1'}}>{f.logo}
+              <PhotoUpload current={form.logo_path ? `http://localhost:4000${form.logo_path}` : ''} onChange={setLogoFile} />
+            </label>
+          </div>
+          <div className="modal-foot">
+            <button className="btn btn-outline" onClick={() => setModal(null)}>{tr('cancel')}</button>
+            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? tr('saving') : tr('save')}</button>
           </div>
         </Modal>
       )}
@@ -460,32 +800,78 @@ function ResultsTab({ token }) {
 }
 
 /* ── APP ── */
-const TABS = ['Lojtarët', 'Stafi', 'Galeria', 'Rezultatet'];
+const SITE = 'http://localhost:3000';
 
 function App() {
-  const [token, setToken] = useState(() => localStorage.getItem('admin_token'));
+  const [token, setToken] = useState(() => {
+    const t = localStorage.getItem('admin_token');
+    if (!isTokenValid(t)) { localStorage.removeItem('admin_token'); return null; }
+    return t;
+  });
   const [tab, setTab] = useState(0);
+  const [lang, setLang] = useState(() => localStorage.getItem('admin_lang') || 'sq');
 
-  if (!token) return <Login onLogin={setToken} />;
+  useEffect(() => { _forceLogout = () => setToken(null); return () => { _forceLogout = null; }; }, []);
+  const tr = TRANSLATIONS[lang];
+
+  function switchLang() {
+    const next = lang === 'sq' ? 'en' : 'sq';
+    setLang(next);
+    localStorage.setItem('admin_lang', next);
+  }
+
+  function t(path) {
+    const keys = path.split('.');
+    let v = tr;
+    for (const k of keys) v = v?.[k];
+    return v ?? path;
+  }
+
+  if (!token) return <Login onLogin={setToken} lang={lang} setLang={(l) => { setLang(l); localStorage.setItem('admin_lang', l); }} />;
 
   return (
-    <div className="app">
-      <div className="app-header">
-        <div className="app-title">FC Malisheva <span>Paneli i Administratorit</span></div>
-        <button className="btn-sm btn-danger" onClick={() => { localStorage.removeItem('admin_token'); setToken(null); }}>Dil</button>
+    <LangCtx.Provider value={{ t, lang }}>
+      <div className="app">
+        {/* Header */}
+        <div className="app-header">
+          <div className="app-title">FC Malisheva <span> - {lang === 'sq' ? 'Paneli i Administratorit' : 'Admin Panel'}</span></div>
+          <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+            <button className="lang-btn" onClick={switchLang} style={{display:'flex',alignItems:'center',gap:'6px'}}>
+              {lang === 'sq'
+                ? <><img src="/assets/logos/Gb.jpg" alt="EN" style={{width:'22px',height:'15px',objectFit:'cover',borderRadius:'2px'}} /><span>EN</span></>
+                : <><img src="/assets/logos/Al.jpg" alt="SQ" style={{width:'22px',height:'15px',objectFit:'cover',borderRadius:'2px'}} /><span>SQ</span></>
+              }
+            </button>
+            <button className="btn-sm btn-danger" onClick={() => { localStorage.removeItem('admin_token'); setToken(null); }}>{tr.logout}</button>
+          </div>
+        </div>
+
+        {/* Site navigation */}
+        <div className="site-nav">
+          <span className="site-nav-label">{tr.siteLabel}</span>
+          {Object.entries(tr.nav).map(([key, label]) => (
+            <a key={key} href={key === 'home' ? SITE : `${SITE}/${key}`} target="_blank" rel="noreferrer">{label}</a>
+          ))}
+        </div>
+
+        {/* Tabs */}
+        <nav className="tabs">
+          {tr.tabs.map((tabName, i) => (
+            <button key={i} className={'tab-btn' + (tab===i ? ' active' : '')} onClick={() => setTab(i)}>{tabName}</button>
+          ))}
+        </nav>
+
+        <div className="tab-content">
+          {tab === 0 && <PlayersTab token={token} />}
+          {tab === 1 && <StaffTab token={token} />}
+          {tab === 2 && <GalleryTab token={token} />}
+          {tab === 3 && <ResultsTab token={token} />}
+          {tab === 4 && <AnnouncementsTab token={token} />}
+          {tab === 5 && <MatchTab token={token} />}
+          {tab === 6 && <SponsorsTab token={token} />}
+        </div>
       </div>
-      <nav className="tabs">
-        {TABS.map((t, i) => (
-          <button key={t} className={'tab-btn' + (tab===i ? ' active' : '')} onClick={() => setTab(i)}>{t}</button>
-        ))}
-      </nav>
-      <div className="tab-content">
-        {tab === 0 && <PlayersTab token={token} />}
-        {tab === 1 && <StaffTab token={token} />}
-        {tab === 2 && <GalleryTab token={token} />}
-        {tab === 3 && <ResultsTab token={token} />}
-      </div>
-    </div>
+    </LangCtx.Provider>
   );
 }
 
