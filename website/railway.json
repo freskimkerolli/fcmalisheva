@@ -6,6 +6,7 @@
   },
   "deploy": {
     "startCommand": "node admin-server.js",
+    "preDeployCommand": "echo ready",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 3
   }
