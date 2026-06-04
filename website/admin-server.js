@@ -9,7 +9,7 @@ const { connectDatabase } = require("./backend/db");
 const store = require("./backend/data/store");
 
 const app = express();
-const PORT = process.env.ADMIN_PORT || 5000;
+const PORT = process.env.PORT || process.env.ADMIN_PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || "fcmalisheva-admin-secret";
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "admin123";
