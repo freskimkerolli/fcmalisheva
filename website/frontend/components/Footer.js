@@ -1,8 +1,14 @@
+import { useTranslation } from "../hooks/useTranslation";
+
 export default function Footer() {
+  const { t } = useTranslation();
   const sponsors = [
-    { name: "Sponsor 1", logo: "/assets/MalishevaLogo.png" },
-    { name: "Sponsor 2", logo: "/assets/MalishevaLogo.png" },
-    { name: "Sponsor 3", logo: "/assets/MalishevaLogo.png" },
+    { name: "Banka Ekonomike", logo: "/assets/Banka_Ekonomike-logo.png" },
+    { name: "Dijamant",        logo: "/assets/Dijamant.jpg"             },
+    { name: "Lanti-B",         logo: "/assets/Lanti-B.jpg"              },
+    { name: "MuriVinkell",     logo: "/assets/MuriVinkell.jpg"          },
+    { name: "VPD",             logo: "/assets/vpd.png"                  },
+    { name: "VSH",             logo: "/assets/VSH.png"                  },
   ];
 
   return (
@@ -20,11 +26,11 @@ export default function Footer() {
         {/* Center: Copyright & Sponsors */}
         <div className="footer-section footer-center">
           <div className="footer-copyright">
-            <p>© 2026 FC Malisheva. Të gjitha të drejtat e rezervuara.</p>
-            <p className="footer-contact">Kontakt: info@fcmalisheva.com</p>
+            <p>{t("footer.rights")}</p>
+            <p className="footer-contact">{t("footer.contact")}</p>
           </div>
           <div className="footer-sponsors">
-            <p className="sponsors-label">Partnerët Zyrtar:</p>
+            <p className="sponsors-label">{t("footer.partners")}</p>
             <div className="sponsors-grid">
               {sponsors.map((sponsor, idx) => (
                 <a
@@ -32,8 +38,13 @@ export default function Footer() {
                   href="#"
                   className="sponsor-link"
                   title={sponsor.name}
+                  style={{ width: "70px", height: "50px", display: "flex", alignItems: "center", justifyContent: "center", padding: "4px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff" }}
                 >
-                  <img src={sponsor.logo} alt={sponsor.name} />
+                  <img
+                    src={sponsor.logo}
+                    alt={sponsor.name}
+                    style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                  />
                 </a>
               ))}
             </div>

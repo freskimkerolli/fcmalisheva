@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FC Malisheva — Admin</title>
+  <style>
+    :root {
+      --bg: #0b0f1a; --surface: #121a2d; --surface-2: #16223c;
+      --text: #e8eef8; --muted: #9cb1d1; --primary: #c88f2a;
+      --danger: #f87171; --border: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    input, select, button, textarea { font: inherit; }
+    img { max-width: 100%; display: block; }
+    /* Layout */
+    .app { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+    .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+    .app-title { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+    .app-title span { color: var(--muted); font-size: 0.85rem; font-weight: 400; margin-left: 10px; }
+    /* Login */
+    .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; }
+    .login-card h2 { color: var(--primary); font-size: 1.4rem; margin-bottom: 4px; }
+    .login-card p { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; }
+    .form-col { display: flex; flex-direction: column; gap: 12px; }
+    /* Tabs */
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 20px; background: var(--surface); color: var(--muted); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.15s; }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .tab-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-top: 20px; }
+    .tab-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .tab-head h3 { font-size: 1.05rem; }
+    /* Inputs */
+    .inp { display: block; width: 100%; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.95rem; outline: none; }
+    .inp:focus { border-color: var(--primary); }
+    .label { display: flex; flex-direction: column; gap: 4px; font-size: 0.82rem; color: var(--muted); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    /* Buttons */
+    .btn { padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-sm { padding: 6px 14px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.82rem; font-weight: 500; }
+    .btn-danger { background: rgba(220,38,38,0.15); color: var(--danger); border-color: rgba(220,38,38,0.3); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    /* Cards */
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
+    .item-card { display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; }
+    .card-photo { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--bg); }
+    .card-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .card-name { font-size: 0.95rem; font-weight: 600; }
+    .card-sub { font-size: 0.78rem; color: var(--muted); }
+    .card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    /* Gallery */
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .gallery-item { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .gallery-img { width: 100%; height: 110px; object-fit: cover; display: block; }
+    .gallery-del { position: absolute; top: 6px; right: 6px; background: rgba(220,38,38,0.85); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 12px; line-height: 1; }
+    /* Results */
+    .result-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; flex-wrap: wrap; }
+    .result-date { font-size: 0.8rem; color: var(--muted); min-width: 88px; }
+    .result-info { flex: 1; font-size: 0.9rem; }
+    .result-score { color: var(--primary); font-weight: 700; }
+    .result-meta { font-size: 0.78rem; color: var(--muted); }
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 24px; }
+    th { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 0.78rem; text-transform: uppercase; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    tr.hl td { background: rgba(200,143,42,0.08); }
+    /* Modal */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .modal-head h3 { font-size: 1.05rem; }
+    .modal-foot { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+    .close-btn { background: transparent; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; }
+    /* Photo upload */
+    .photo-row { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+    .photo-thumb { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
+    /* Misc */
+    .err { color: var(--danger); font-size: 0.82rem; }
+    .section-gap { margin-top: 32px; }
+    h4 { color: var(--primary); margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+const API = '';
+
+function req(method, url, body, token) {
+  const headers = {};
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (body && !(body instanceof FormData)) headers['Content-Type'] = 'application/json';
+  return fetch(API + url, {
+    method,
+    headers,
+    body: body instanceof FormData ? body : (body ? JSON.stringify(body) : undefined),
+  }).then(async r => {
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Gabim');
+    return data;
+  });
+}
+
+/* ── Photo Upload ── */
+function PhotoUpload({ current, onChange }) {
+  const ref = useRef();
+  const [preview, setPreview] = useState(current || '');
+  function pick(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    onChange(f);
+    setPreview(URL.createObjectURL(f));
+  }
+  return (
+    <div className="photo-row">
+      {preview && <img src={preview} className="photo-thumb" onError={e => e.target.style.display='none'} />}
+      <button type="button" className="btn btn-outline" style={{padding:'6px 14px',fontSize:'0.82rem'}} onClick={() => ref.current.click()}>
+        {preview ? 'Ndrysho foton' : 'Ngarko foto'}
+      </button>
+      <input ref={ref} type="file" accept="image/*" style={{display:'none'}} onChange={pick} />
+    </div>
+  );
+}
+
+/* ── Modal ── */
+function Modal({ title, onClose, children }) {
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-head">
+          <h3>{title}</h3>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ── LOGIN ── */
+function Login({ onLogin }) {
+  const [f, setF] = useState({ username:'', password:'' });
+  const [err, setErr] = useState('');
+  const [loading, setLoading] = useState(false);
+  async function submit(e) {
+    e.preventDefault(); setErr(''); setLoading(true);
+    try {
+      const data = await req('POST', '/api/login', f);
+      localStorage.setItem('admin_token', data.token);
+      onLogin(data.token);
+    } catch(e) { setErr(e.message); }
+    finally { setLoading(false); }
+  }
+  return (
+    <div className="login-wrap">
+      <div className="login-card">
+        <h2>Paneli i Administratorit</h2>
+        <p>FC Malisheva — Hyrja e Zyrtarit</p>
+        <form className="form-col" onSubmit={submit}>
+          <input className="inp" placeholder="Emri i përdoruesit" value={f.username} onChange={e => setF({...f, username:e.target.value})} required />
+          <input className="inp" type="password" placeholder="Fjalëkalimi" value={f.password} onChange={e => setF({...f, password:e.target.value})} required />
+          {err && <p className="err">{err}</p>}
+          <button className="btn btn-primary" type="submit" disabled={loading}>{loading ? 'Duke hyrë...' : 'Hyr'}</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ── PLAYERS ── */
+function PlayersTab({ token }) {
+  const [players, setPlayers] = useState([]);
+  const [modal, setModal] = useState(null);
+  const [form, setForm] = useState({});
+  const [photoFile, setPhotoFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const load = () => req('GET', '/api/players', null, token).then(setPlayers);
+  useEffect(() => { load(); }, []);
+
+  function openAdd() {
+    setForm({ name:'', position:'', number:'', nationality:'Kosovare', birthDate:'', height:'', weight:'', photo:'' });
+    setPhotoFile(null); setModal({ mode:'add' });
+  }
+  function openEdit(p) { setForm({...p}); setPhotoFile(null); setModal({ mode:'edit', id:p.id }); }
+
+  async function save() {
+    setSaving(true);
+    try {
+      const fd = new FormData();
+      Object.entries(form).forEach(([k,v]) => fd.append(k, v ?? ''));
+      if (photoFile) fd.append('photo', photoFile);
+      if (modal.mode === 'add') await req('POST', '/api/players', fd, token);
+      else await req('PUT', `/api/players/${modal.id}`, fd, token);
+      await load(); setModal(null);
+    } catch(e) { alert(e.message); }
+    finally { setSaving(false); }
+  }
+
+  async function del(id) {
+    if (!confirm('Fshi lojtarin?')) return;
+    await req('DELETE', `/api/players/${id}`, null, token);
+    load();
+  }
+
+  return (
+    <div>
+      <div className="tab-head">
+        <h3>Lojtarët ({players.length})</h3>
+        <button className="btn btn-primary" onClick={openAdd}>+ Shto Lojtar</button>
+      </div>
+      <div className="item-list">
+        {players.map(p => (
+          <div className="item-card" key={p.id}>
+            <img className="card-photo" src={`http://localhost:4000${p.photo}`} onError={e => e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} />
+            <div className="card-info">
+              <span className="card-name">{p.name}</span>
+              <span className="card-sub">#{p.number} · {p.position}</span>
+              <span className="card-sub">{p.nationality}</span>
+            </div>
+            <div className="card-actions">
+              <button className="btn-sm" onClick={() => openEdit(p)}>Ndrysho</button>
+              <button className="btn-sm btn-danger" onClick={() => del(p.id)}>Fshi</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {modal && (
+        <Modal title={modal.mode==='add' ? 'Shto Lojtar' : 'Ndrysho Lojtar'} onClose={() => setModal(null)}>
+          <div className="form-grid">
+            <label className="label">Emri<input className="inp" value={form.name||''} onChange={e=>setForm({...form,name:e.target.value})} /></label>
+            <label className="label">Pozita
+              <select className="inp" value={form.position||''} onChange={e=>setForm({...form,position:e.target.value})}>
+                <option value="">Zgjidh...</option>
+                {['Portier','Mbrojtës','Mesfushor','Sulmues'].map(p=><option key={p}>{p}</option>)}
+              </select>
+            </label>
+            <label className="label">Numri<input className="inp" type="number" value={form.number||''} onChange={e=>setForm({...form,number:e.target.value})} /></label>
+            <label className="label">Kombësia<input className="inp" value={form.nationality||''} onChange={e=>setForm({...form,nationality:e.target.value})} /></label>
+            <label className="label">Data e lindjes<input className="inp" type="date" value={form.birthDate||''} onChange={e=>setForm({...form,birthDate:e.target.value})} /></label>
+            <label className="label">Gjatësia<input className="inp" placeholder="182 cm" value={form.height||''} onChange={e=>setForm({...form,height:e.target.value})} /></label>
+            <label className="label">Pesha<input className="inp" placeholder="76 kg" value={form.weight||''} onChange={e=>setForm({...form,weight:e.target.value})} /></label>
+            <label className="label">Foto
+              <PhotoUpload current={form.photo ? `http://localhost:4000${form.photo}` : ''} onChange={setPhotoFile} />
+            </label>
+          </div>
+          <div className="modal-foot">
+            <button className="btn btn-outline" onClick={() => setModal(null)}>Anulo</button>
+            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? 'Duke ruajtur...' : 'Ruaj'}</button>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+/* ── STAFF ── */
+function StaffTab({ token }) {
+  const [staff, setStaff] = useState([]);
+  const [modal, setModal] = useState(null);
+  const [form, setForm] = useState({});
+  const [photoFile, setPhotoFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const load = () => req('GET', '/api/staff', null, token).then(setStaff);
+  useEffect(() => { load(); }, []);
+
+  function openAdd() { setForm({ name:'', role:'', email:'', photo:'' }); setPhotoFile(null); setModal({ mode:'add' }); }
+  function openEdit(s) { setForm({...s}); setPhotoFile(null); setModal({ mode:'edit', id:s.id }); }
+
+  async function save() {
+    setSaving(true);
+    try {
+      const fd = new FormData();
+      Object.entries(form).forEach(([k,v]) => fd.append(k, v ?? ''));
+      if (photoFile) fd.append('photo', photoFile);
+      if (modal.mode === 'add') await req('POST', '/api/staff', fd, token);
+      else await req('PUT', `/api/staff/${modal.id}`, fd, token);
+      await load(); setModal(null);
+    } catch(e) { alert(e.message); }
+    finally { setSaving(false); }
+  }
+
+  async function del(id) {
+    if (!confirm('Fshi anëtarin?')) return;
+    await req('DELETE', `/api/staff/${id}`, null, token);
+    load();
+  }
+
+  return (
+    <div>
+      <div className="tab-head">
+        <h3>Stafi Teknik ({staff.length})</h3>
+        <button className="btn btn-primary" onClick={openAdd}>+ Shto Anëtar</button>
+      </div>
+      <div className="item-list">
+        {staff.map(s => (
+          <div className="item-card" key={s.id}>
+            <img className="card-photo" src={`http://localhost:4000${s.photo}`} onError={e => e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} />
+            <div className="card-info">
+              <span className="card-name">{s.name}</span>
+              <span className="card-sub">{s.role}</span>
+              <span className="card-sub">{s.email}</span>
+            </div>
+            <div className="card-actions">
+              <button className="btn-sm" onClick={() => openEdit(s)}>Ndrysho</button>
+              <button className="btn-sm btn-danger" onClick={() => del(s.id)}>Fshi</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {modal && (
+        <Modal title={modal.mode==='add' ? 'Shto Anëtar Stafi' : 'Ndrysho Anëtar Stafi'} onClose={() => setModal(null)}>
+          <div className="form-grid">
+            <label className="label">Emri<input className="inp" value={form.name||''} onChange={e=>setForm({...form,name:e.target.value})} /></label>
+            <label className="label">Roli<input className="inp" value={form.role||''} onChange={e=>setForm({...form,role:e.target.value})} /></label>
+            <label className="label" style={{gridColumn:'1/-1'}}>Email<input className="inp" type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})} /></label>
+            <label className="label" style={{gridColumn:'1/-1'}}>Foto
+              <PhotoUpload current={form.photo ? `http://localhost:4000${form.photo}` : ''} onChange={setPhotoFile} />
+            </label>
+          </div>
+          <div className="modal-foot">
+            <button className="btn btn-outline" onClick={() => setModal(null)}>Anulo</button>
+            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? 'Duke ruajtur...' : 'Ruaj'}</button>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+/* ── GALLERY ── */
+function GalleryTab({ token }) {
+  const [images, setImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef();
+
+  const load = () => req('GET', '/api/gallery', null, token).then(setImages);
+  useEffect(() => { load(); }, []);
+
+  async function upload(e) {
+    const f = e.target.files[0]; if (!f) return;
+    setUploading(true);
+    try {
+      const fd = new FormData(); fd.append('photo', f);
+      await req('POST', '/api/gallery', fd, token);
+      await load();
+    } finally { setUploading(false); e.target.value=''; }
+  }
+
+  async function del(url) {
+    if (!confirm('Fshi foton nga galeria?')) return;
+    await req('DELETE', '/api/gallery', { url }, token);
+    load();
+  }
+
+  return (
+    <div>
+      <div className="tab-head">
+        <h3>Galeria ({images.length} foto)</h3>
+        <button className="btn btn-primary" onClick={() => fileRef.current.click()} disabled={uploading}>
+          {uploading ? 'Duke ngarkuar...' : '+ Ngarko Foto'}
+        </button>
+        <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={upload} />
+      </div>
+      <div className="gallery-grid">
+        {images.map((url, i) => (
+          <div className="gallery-item" key={i}>
+            <img className="gallery-img" src={`http://localhost:4000${url}`} onError={e => e.target.src='https://placehold.co/150x110/121a2d/9cb1d1?text=foto'} />
+            <button className="gallery-del" onClick={() => del(url)} title="Fshi">✕</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── RESULTS ── */
+function ResultsTab({ token }) {
+  const [matches, setMatches] = useState([]);
+  const [table, setTable] = useState([]);
+  const [modal, setModal] = useState(false);
+  const [form, setForm] = useState({ date:'', opponent:'', score:'', competition:'Superliga', venue:'' });
+  const [saving, setSaving] = useState(false);
+
+  const load = () => req('GET', '/api/results', null, token).then(d => { setMatches(d.matches); setTable(d.table); });
+  useEffect(() => { load(); }, []);
+
+  async function add() {
+    setSaving(true);
+    try { await req('POST', '/api/results', form, token); await load(); setModal(false); setForm({ date:'', opponent:'', score:'', competition:'Superliga', venue:'' }); }
+    catch(e) { alert(e.message); }
+    finally { setSaving(false); }
+  }
+
+  async function del(id) {
+    if (!confirm('Fshi ndeshjen?')) return;
+    await req('DELETE', `/api/results/${id}`, null, token); load();
+  }
+
+  return (
+    <div>
+      <div className="tab-head">
+        <h3>Rezultatet ({matches.length} ndeshje)</h3>
+        <button className="btn btn-primary" onClick={() => setModal(true)}>+ Shto Ndeshje</button>
+      </div>
+      <div className="item-list">
+        {matches.map(m => (
+          <div className="result-row" key={m.id}>
+            <span className="result-date">{m.date}</span>
+            <span className="result-info"><b>FC Malisheva</b> vs <b>{m.opponent}</b> <span className="result-score">{m.score}</span></span>
+            <span className="result-meta">{m.competition} · {m.venue}</span>
+            <button className="btn-sm btn-danger" onClick={() => del(m.id)}>Fshi</button>
+          </div>
+        ))}
+      </div>
+
+      <div className="section-gap">
+        <h4>Tabela e Ligës</h4>
+        <table>
+          <thead><tr><th>#</th><th>Ekipi</th><th>Ndeshje</th><th>Pikë</th></tr></thead>
+          <tbody>
+            {table.map((r, i) => (
+              <tr key={i} className={r.team === 'FC Malisheva' ? 'hl' : ''}>
+                <td>{r.position}</td><td>{r.team}</td><td>{r.played}</td><td><b>{r.points}</b></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {modal && (
+        <Modal title="Shto Ndeshje" onClose={() => setModal(false)}>
+          <div className="form-grid">
+            <label className="label">Data<input className="inp" type="date" value={form.date} onChange={e=>setForm({...form,date:e.target.value})} /></label>
+            <label className="label">Kundërshtari<input className="inp" placeholder="p.sh. Drita" value={form.opponent} onChange={e=>setForm({...form,opponent:e.target.value})} /></label>
+            <label className="label">Rezultati<input className="inp" placeholder="2-1" value={form.score} onChange={e=>setForm({...form,score:e.target.value})} /></label>
+            <label className="label">Gara<input className="inp" value={form.competition} onChange={e=>setForm({...form,competition:e.target.value})} /></label>
+            <label className="label" style={{gridColumn:'1/-1'}}>Fusha<input className="inp" placeholder="Fushë e Jashtme" value={form.venue} onChange={e=>setForm({...form,venue:e.target.value})} /></label>
+          </div>
+          <div className="modal-foot">
+            <button className="btn btn-outline" onClick={() => setModal(false)}>Anulo</button>
+            <button className="btn btn-primary" onClick={add} disabled={saving}>{saving ? 'Duke ruajtur...' : 'Ruaj'}</button>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+/* ── APP ── */
+const TABS = ['Lojtarët', 'Stafi', 'Galeria', 'Rezultatet'];
+
+function App() {
+  const [token, setToken] = useState(() => localStorage.getItem('admin_token'));
+  const [tab, setTab] = useState(0);
+
+  if (!token) return <Login onLogin={setToken} />;
+
+  return (
+    <div className="app">
+      <div className="app-header">
+        <div className="app-title">FC Malisheva <span>Paneli i Administratorit</span></div>
+        <button className="btn-sm btn-danger" onClick={() => { localStorage.removeItem('admin_token'); setToken(null); }}>Dil</button>
+      </div>
+      <nav className="tabs">
+        {TABS.map((t, i) => (
+          <button key={t} className={'tab-btn' + (tab===i ? ' active' : '')} onClick={() => setTab(i)}>{t}</button>
+        ))}
+      </nav>
+      <div className="tab-content">
+        {tab === 0 && <PlayersTab token={token} />}
+        {tab === 1 && <StaffTab token={token} />}
+        {tab === 2 && <GalleryTab token={token} />}
+        {tab === 3 && <ResultsTab token={token} />}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

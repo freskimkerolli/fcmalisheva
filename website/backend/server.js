@@ -4,6 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const stripe = require("stripe");
 const apiRoutes = require("./routes/api");
+const adminRoutes = require("./routes/admin");
 const { connectDatabase } = require("./db");
 
 dotenv.config();
@@ -11,6 +12,7 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/api/admin", adminRoutes);
 app.use("/api", apiRoutes);
 app.use(
   "/assets",
@@ -28,13 +30,8 @@ if (!STRIPE_SECRET_KEY) {
   console.warn("Warning: STRIPE_SECRET_KEY is not defined in .env");
 }
 
-connectDatabase()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Backend running on http://localhost:${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error("Database connection failed:", error);
-    process.exit(1);
+connectDatabase().finally(() => {
+  app.listen(PORT, () => {
+    console.log(`Backend running on http://localhost:${PORT}`);
   });
+});

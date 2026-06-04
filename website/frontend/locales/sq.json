@@ -1,0 +1,119 @@
+{
+  "nav": {
+    "home": "Ballina",
+    "team": "Ekipi",
+    "staff": "Stafi",
+    "results": "Rezultatet",
+    "history": "Historiku",
+    "gallery": "Galeria",
+    "shop": "Shop"
+  },
+  "home": {
+    "competition": "Superliga",
+    "matchday": "Dita 8",
+    "stadium": "Stadiumi Liman Gegaj",
+    "homeTeam": "FC Malisheva",
+    "awayTeam": "Drita Gjilanë",
+    "date": "5 qershor 2026",
+    "time": "19:00",
+    "buyTickets": "Bli Bileta",
+    "latestNews": "Njoftime të Fundit",
+    "readMore": "Lexo më shumë →",
+    "quickLinks": {
+      "team": "Ekipi",
+      "teamSub": "Shiko lojtarët dhe stafin",
+      "staff": "Stafi",
+      "staffSub": "Menaxheri dhe stafi teknik",
+      "gallery": "Galeria",
+      "gallerySub": "Fotot nga ndeshjeve",
+      "shop": "Shop",
+      "shopSub": "Fanella dhe produkte"
+    },
+    "announcements": {
+      "a1": { "title": "Fitorja e madhe ndaj Prishtinës", "date": "1 qershor 2026", "content": "FC Malisheva fitoi me rezultatin 3-1 ndaj Prishtinës në ndeshjen e fundit.", "category": "Ndeshje" },
+      "a2": { "title": "Lojtari i javës: Albin Rama", "date": "31 maj 2026", "content": "Albin Rama u emërua lojtari i javës pas performancës së tij të jashtëzakonshme.", "category": "Tima" },
+      "a3": { "title": "Përgatitje për ndeshjen e Conference League", "date": "30 maj 2026", "content": "Ekipi përgatitet për ndeshjen e rëndësishme të Conference League këtë javë.", "category": "Kampionat" }
+    }
+  },
+  "team": {
+    "eyebrow": "Ekipi",
+    "title": "Rosteri i FC Malisheva",
+    "subtitle": "Skuadra konkurruese që synon lart në Superligë dhe Conference League.",
+    "activeSquad": "Skuadra aktive",
+    "activeSub": "lojtarë të regjistruar për sezonin aktual.",
+    "competition": "Garë",
+    "competitionSub": "Superliga e Kosovës dhe Conference League.",
+    "position": "Pozita",
+    "age": "Mosha",
+    "nationality": "Shtetësia",
+    "years": "vjeç",
+    "groups": {
+      "Portierë": "Portierë",
+      "Mbrojtës": "Mbrojtës",
+      "Mesfushorë": "Mesfushorë",
+      "Sulmues": "Sulmues"
+    }
+  },
+  "staff": {
+    "eyebrow": "Stafi",
+    "title": "Stafi Teknik i FC Malisheva",
+    "subtitle": "Një ekip teknik profesional që udhëheq përgatitjet e skuadrës dhe mbështet strategjinë në fushë."
+  },
+  "results": {
+    "latestMatches": "Ndeshjet e fundit",
+    "home": "Shtëpi",
+    "away": "Mysafir",
+    "win": "Fitore",
+    "draw": "Barazim",
+    "loss": "Humbje",
+    "tableTitle": "Tabela e Albi Mall Superligës",
+    "col": { "team": "Ekipi", "played": "Nd", "gd": "GD", "points": "Pikë" },
+    "legend": {
+      "champions": "Champions League",
+      "conference": "Conference League",
+      "playoff": "Barazh",
+      "relegation": "Rënie nga liga"
+    }
+  },
+  "gallery": {
+    "eyebrow": "Galeria",
+    "title": "Momentet më të mira të FC Malisheva",
+    "subtitle": "Shfleto fotot zyrtare të ekipit, stolit dhe tifozërisë. Këtu do të gjeni ndjesinë e stadiumit dhe historinë vizuale të klubit."
+  },
+  "history": {
+    "eyebrow": "Historiku",
+    "title": "Rruga dhe Tifozët e FC Malisheva",
+    "subtitle": "Një përmbledhje e historisë së klubit dhe mbështetja e pakursyer e tifozërisë që ka ndërtuar identitetin e FC Malisheva.",
+    "clubTitle": "Historiku i klubit",
+    "clubText1": "FC Malisheva ka ndërtuar një rrugë të shkëlqyer në futbollin kosovar. Me një përkushtim të jashtëzakonshëm dhe sakrifica të mëdha, klubi ka arritur suksese të rëndësishme në Superligë dhe po përgatitet për sfidën e Conference League.",
+    "clubText2": "Sezonet e fundit kanë shënuar rritje të performancës në çdo kategori: ekipin, stafin dhe strukturat e klubit.",
+    "fansTitle": "Historiku i tifozërisë",
+    "fansText1": "Tifozët e FC Malisheva kanë një histori të gjatë pasionante. Me një kulturë të fortë të bashkimit dhe mbështetjes për ekipin, tifozët janë bërë një nga elementët kyç të identitetit të klubit.",
+    "fansText2": "Shpatulla për shpatull në çdo ndeshje, ata krijojnë një atmosferë unike dhe mbështesin ekipin në çdo hap të rrugëtimit drejt sukseseve."
+  },
+  "shop": {
+    "eyebrow": "Shop",
+    "title": "Dyqani zyrtar i FC Malisheva",
+    "subtitle": "Zgjidh fanellën e ekipit dhe personalizo me emrin e lojtarit ose me emrin tënd të personalizuar.",
+    "home": "Fanella vendas",
+    "homeDesc": "Fanella zyrtare e ekipit për ndeshje në shtëpi.",
+    "away": "Fanella mysafir",
+    "awayDesc": "Fanella për ndeshje larg stadiumi.",
+    "third": "Fanella e trete",
+    "thirdDesc": "Fanella alternative e sezonit.",
+    "nameLabel": "Emri / Lojtari:",
+    "customOption": "Emër i personalizuar",
+    "playersGroup": "Lojtarët e ekipit",
+    "customLabel": "Emri juaj (opsionale):",
+    "customPlaceholder": "Shkruani emrin tuaj",
+    "orderBtn": "Porosit",
+    "homeJersey": "Home Jersey",
+    "awayJersey": "Away Jersey",
+    "thirdJersey": "Third Jersey"
+  },
+  "footer": {
+    "rights": "© 2026 FC Malisheva. Të gjitha të drejtat e rezervuara.",
+    "contact": "Kontakt: info@fcmalisheva.com",
+    "partners": "Partnerët Zyrtar:"
+  }
+}

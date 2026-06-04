@@ -1,0 +1,119 @@
+{
+  "nav": {
+    "home": "Home",
+    "team": "Team",
+    "staff": "Staff",
+    "results": "Results",
+    "history": "History",
+    "gallery": "Gallery",
+    "shop": "Shop"
+  },
+  "home": {
+    "competition": "Superliga",
+    "matchday": "Matchday 8",
+    "stadium": "Liman Gegaj Stadium",
+    "homeTeam": "FC Malisheva",
+    "awayTeam": "Drita Gjilan",
+    "date": "June 5, 2026",
+    "time": "19:00",
+    "buyTickets": "Buy Tickets",
+    "latestNews": "Latest News",
+    "readMore": "Read more →",
+    "quickLinks": {
+      "team": "Team",
+      "teamSub": "View players and staff",
+      "staff": "Staff",
+      "staffSub": "Manager and technical staff",
+      "gallery": "Gallery",
+      "gallerySub": "Photos from matches",
+      "shop": "Shop",
+      "shopSub": "Jerseys and products"
+    },
+    "announcements": {
+      "a1": { "title": "Big win against Prishtina", "date": "June 1, 2026", "content": "FC Malisheva won 3-1 against Prishtina in their latest match.", "category": "Match" },
+      "a2": { "title": "Player of the week: Albin Rama", "date": "May 31, 2026", "content": "Albin Rama was named player of the week after his outstanding performance.", "category": "Team" },
+      "a3": { "title": "Preparation for Conference League", "date": "May 30, 2026", "content": "The team is preparing for the important Conference League match this week.", "category": "Championship" }
+    }
+  },
+  "team": {
+    "eyebrow": "Team",
+    "title": "FC Malisheva Roster",
+    "subtitle": "A competitive squad aiming high in the Superliga and Conference League.",
+    "activeSquad": "Active squad",
+    "activeSub": "players registered for the current season.",
+    "competition": "Competition",
+    "competitionSub": "Kosovo Superliga and Conference League.",
+    "position": "Position",
+    "age": "Age",
+    "nationality": "Nationality",
+    "years": "years old",
+    "groups": {
+      "Portierë": "Goalkeepers",
+      "Mbrojtës": "Defenders",
+      "Mesfushorë": "Midfielders",
+      "Sulmues": "Forwards"
+    }
+  },
+  "staff": {
+    "eyebrow": "Staff",
+    "title": "FC Malisheva Technical Staff",
+    "subtitle": "A professional technical team leading squad preparations and supporting on-field strategy."
+  },
+  "results": {
+    "latestMatches": "Latest Matches",
+    "home": "Home",
+    "away": "Away",
+    "win": "Win",
+    "draw": "Draw",
+    "loss": "Loss",
+    "tableTitle": "Albi Mall Superliga Table",
+    "col": { "team": "Club", "played": "MP", "gd": "GD", "points": "Pts" },
+    "legend": {
+      "champions": "Champions League",
+      "conference": "Conference League",
+      "playoff": "Playoff",
+      "relegation": "Relegation"
+    }
+  },
+  "gallery": {
+    "eyebrow": "Gallery",
+    "title": "FC Malisheva's Best Moments",
+    "subtitle": "Browse official photos of the team, bench and fans. Here you'll find the feeling of the stadium and the visual history of the club."
+  },
+  "history": {
+    "eyebrow": "History",
+    "title": "FC Malisheva's Journey and Fans",
+    "subtitle": "An overview of the club's history and the unwavering support of the fans who have built FC Malisheva's identity.",
+    "clubTitle": "Club History",
+    "clubText1": "FC Malisheva has built an excellent journey in Kosovo football. With extraordinary dedication and great sacrifices, the club has achieved significant successes in the Superliga and is preparing for the Conference League challenge.",
+    "clubText2": "Recent seasons have marked performance improvements across every category: the team, staff and club structures.",
+    "fansTitle": "Fan History",
+    "fansText1": "FC Malisheva's fans have a long and passionate history. With a strong culture of unity and support for the team, the fans have become one of the key elements of the club's identity.",
+    "fansText2": "Shoulder to shoulder at every match, they create a unique atmosphere and support the team at every step of the journey towards success."
+  },
+  "shop": {
+    "eyebrow": "Shop",
+    "title": "FC Malisheva Official Store",
+    "subtitle": "Choose your team jersey and personalise it with a player name or your own custom name.",
+    "home": "Home Jersey",
+    "homeDesc": "Official team jersey for home matches.",
+    "away": "Away Jersey",
+    "awayDesc": "Jersey for away matches.",
+    "third": "Third Jersey",
+    "thirdDesc": "Alternative jersey for the season.",
+    "nameLabel": "Name / Player:",
+    "customOption": "Custom name",
+    "playersGroup": "Squad players",
+    "customLabel": "Your name (optional):",
+    "customPlaceholder": "Enter your name",
+    "orderBtn": "Order",
+    "homeJersey": "Home Jersey",
+    "awayJersey": "Away Jersey",
+    "thirdJersey": "Third Jersey"
+  },
+  "footer": {
+    "rights": "© 2026 FC Malisheva. All rights reserved.",
+    "contact": "Contact: info@fcmalisheva.com",
+    "partners": "Official Partners:"
+  }
+}

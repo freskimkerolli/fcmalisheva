@@ -1,41 +1,26 @@
+import { useTranslation } from "../hooks/useTranslation";
+
 export default function History() {
+  const { t } = useTranslation();
+
   return (
     <>
       <section className="page-header">
-        <p className="eyebrow">Historiku</p>
-        <h2>Rruga dhe Tifozët e FC Malisheva</h2>
-        <p className="section-subtitle">
-          Një përmbledhje e historisë së klubit dhe mbështetja e pakursyer e
-          tifozërisë që ka ndërtuar identitetin e FC Malisheva.
-        </p>
+        <p className="eyebrow">{t("history.eyebrow")}</p>
+        <h2>{t("history.title")}</h2>
+        <p className="section-subtitle">{t("history.subtitle")}</p>
       </section>
 
       <section className="history-grid">
         <div className="content-block">
-          <h3>Historiku i klubit</h3>
-          <p>
-            FC Malisheva ka ndërtuar një rrugë të shkëlqyer në futbollin
-            kosovar. Me një përkushtim të jashtëzakonshëm dhe sakrifica të
-            mëdha, klubi ka arritur suksese të rëndësishme në Superligë dhe po
-            përgatitet për sfidën e Conference League.
-          </p>
-          <p>
-            Sezonet e fundit kanë shënuar rritje të performancës në çdo
-            kategori: ekipin, stafin dhe strukturat e klubit.
-          </p>
+          <h3>{t("history.clubTitle")}</h3>
+          <p>{t("history.clubText1")}</p>
+          <p>{t("history.clubText2")}</p>
         </div>
         <div className="content-block">
-          <h3>Historiku i tifozërisë</h3>
-          <p>
-            Tifozët e FC Malisheva kanë një histori të gjatë pasionante. Me një
-            kulturë të fortë të bashkimit dhe mbështetjes për ekipin, tifozët
-            janë bërë një nga elementët kyç të identitetit të klubit.
-          </p>
-          <p>
-            Shpatulla për shpatull në çdo ndeshje, ata krijojnë një atmosferë
-            unike dhe mbështesin ekipin në çdo hap të rrugëtimit drejt
-            sukseseve.
-          </p>
+          <h3>{t("history.fansTitle")}</h3>
+          <p>{t("history.fansText1")}</p>
+          <p>{t("history.fansText2")}</p>
         </div>
       </section>
     </>

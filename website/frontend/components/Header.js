@@ -1,7 +1,9 @@
 import Link from "next/link";
-import ThemeToggle from "./ThemeToggle";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function Header() {
+  const { t, locale, switchLocale } = useTranslation();
+
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -11,22 +13,25 @@ export default function Header() {
             alt="FC Malisheva"
             className="logo"
           />
-          <div className="brand-text">
-            <span className="site-title">FC Malisheva</span>
-          </div>
+          <span className="site-title">FC Malisheva</span>
         </div>
-        <ThemeToggle />
+
+        <nav className="nav-menu">
+          <Link href="/">{t("nav.home")}</Link>
+          <Link href="/team">{t("nav.team")}</Link>
+          <Link href="/staff">{t("nav.staff")}</Link>
+          <Link href="/results">{t("nav.results")}</Link>
+          <Link href="/history">{t("nav.history")}</Link>
+          <Link href="/gallery">{t("nav.gallery")}</Link>
+          <Link href="/shop">{t("nav.shop")}</Link>
+        </nav>
+
+        <div className="header-spacer">
+          <button onClick={switchLocale} className="lang-btn">
+            {locale === "sq" ? "🇬🇧 EN" : "🇦🇱 SQ"}
+          </button>
+        </div>
       </div>
-      <nav className="nav-menu">
-        <Link href="/">Ballina</Link>
-        <Link href="/team">Ekipi</Link>
-        <Link href="/staff">Stafi</Link>
-        <Link href="/results">Rezultatet</Link>
-        <Link href="/history">Historiku</Link>
-        <Link href="/gallery">Galeria</Link>
-        <Link href="/shop">Shop</Link>
-        <Link href="/admin">Admin</Link>
-      </nav>
     </header>
   );
 }

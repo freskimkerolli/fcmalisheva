@@ -1,36 +1,44 @@
 const express = require("express");
-const {
-  players,
-  staff,
-  gallery,
-  results,
-  table,
-} = require("../data/sampleData");
+const store = require("../data/store");
 
 const router = express.Router();
 
-router.get("/team", (req, res) => {
-  res.json(players);
+router.get("/team", async (req, res) => {
+  try {
+    res.json(await store.getPlayers());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-router.get("/staff", (req, res) => {
-  res.json(staff);
+router.get("/staff", async (req, res) => {
+  try {
+    res.json(await store.getStaff());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-router.get("/gallery", (req, res) => {
-  res.json(gallery);
+router.get("/gallery", async (req, res) => {
+  try {
+    res.json(await store.getGallery());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-router.get("/results", (req, res) => {
-  res.json({ matches: results, table });
+router.get("/results", async (req, res) => {
+  try {
+    res.json(await store.getResults());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 router.post("/checkout", (req, res) => {
-  res
-    .status(501)
-    .json({
-      error: "Stripe checkout is postponed. Please use Cash ordering for now.",
-    });
+  res.status(501).json({
+    error: "Stripe checkout is postponed. Please use Cash ordering for now.",
+  });
 });
 
 module.exports = router;

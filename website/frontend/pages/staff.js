@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useTranslation } from "../hooks/useTranslation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export default function Staff() {
+  const { t } = useTranslation();
   const [staff, setStaff] = useState([]);
 
   useEffect(() => {
@@ -13,18 +15,19 @@ export default function Staff() {
   return (
     <>
       <section className="page-header">
-        <p className="eyebrow">Stafi</p>
-        <h2>Stafi Teknik i FC Malisheva</h2>
-        <p className="section-subtitle">
-          Një ekip teknik profesional që udhëheq përgatitjet e skuadrës dhe
-          mbështet strategjinë në fushë.
-        </p>
+        <p className="eyebrow">{t("staff.eyebrow")}</p>
+        <h2>{t("staff.title")}</h2>
+        <p className="section-subtitle">{t("staff.subtitle")}</p>
       </section>
 
       <section className="cards-grid">
         {staff.map((member) => (
           <article key={member.id} className="card">
-            <img src={member.photo} alt={member.name} />
+            <img
+              src={`http://localhost:4000${member.photo}`}
+              alt={member.name}
+              style={{ width: "100%", height: "280px", objectFit: "cover", objectPosition: "top", borderRadius: "12px" }}
+            />
             <div className="card-body">
               <h3>{member.name}</h3>
               <p className="section-subtitle">{member.role}</p>
