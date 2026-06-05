@@ -324,7 +324,7 @@ function PlayersTab({ token }) {
       <div className="item-list">
         {players.map(p => (
           <div className="item-card" key={p.id}>
-            <img className="card-photo" src={`http://localhost:4000${p.photo}`} onError={e => e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} />
+            <img className="card-photo" src={`${p.photo}`} onError={e => e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} />
             <div className="card-info">
               <span className="card-name">{p.name}</span>
               <span className="card-sub">#{p.number} · {p.position}</span>
@@ -354,7 +354,7 @@ function PlayersTab({ token }) {
             <label className="label">{tr('f.height')}<input className="inp" placeholder={tr('placeholderHeight')} value={form.height||''} onChange={e=>setForm({...form,height:e.target.value})} /></label>
             <label className="label">{tr('f.weight')}<input className="inp" placeholder={tr('placeholderWeight')} value={form.weight||''} onChange={e=>setForm({...form,weight:e.target.value})} /></label>
             <label className="label">{tr('f.photo')}
-              <PhotoUpload current={form.photo ? `http://localhost:4000${form.photo}` : ''} onChange={setPhotoFile} />
+              <PhotoUpload current={form.photo ? `${form.photo}` : ''} onChange={setPhotoFile} />
             </label>
           </div>
           <div className="modal-foot">
@@ -411,7 +411,7 @@ function StaffTab({ token }) {
       <div className="item-list">
         {staff.map(s => (
           <div className="item-card" key={s.id}>
-            <img className="card-photo" src={`http://localhost:4000${s.photo}`} onError={e => e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} />
+            <img className="card-photo" src={`${s.photo}`} onError={e => e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} />
             <div className="card-info">
               <span className="card-name">{s.name}</span>
               <span className="card-sub">{s.role}</span>
@@ -432,7 +432,7 @@ function StaffTab({ token }) {
             <label className="label">{tr('f.role')}<input className="inp" value={form.role||''} onChange={e=>setForm({...form,role:e.target.value})} /></label>
             <label className="label" style={{gridColumn:'1/-1'}}>{tr('f.email')}<input className="inp" type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})} /></label>
             <label className="label" style={{gridColumn:'1/-1'}}>{tr('f.photo')}
-              <PhotoUpload current={form.photo ? `http://localhost:4000${form.photo}` : ''} onChange={setPhotoFile} />
+              <PhotoUpload current={form.photo ? `${form.photo}` : ''} onChange={setPhotoFile} />
             </label>
           </div>
           <div className="modal-foot">
@@ -484,7 +484,7 @@ function GalleryTab({ token }) {
       <div className="gallery-grid">
         {images.map((url, i) => (
           <div className="gallery-item" key={i}>
-            <img className="gallery-img" src={`http://localhost:4000${url}`} onError={e => e.target.src='https://placehold.co/150x110/121a2d/9cb1d1?text=foto'} />
+            <img className="gallery-img" src={`${url}`} onError={e => e.target.src='https://placehold.co/150x110/121a2d/9cb1d1?text=foto'} />
             <button className="gallery-del" onClick={() => del(url)} title="✕">✕</button>
           </div>
         ))}
@@ -697,7 +697,7 @@ function MatchTab({ token }) {
         <label className="label">{f.home}
           <input className="inp" value={form.home_team||''} onChange={e=>setForm({...form,home_team:e.target.value})} />
           <div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'6px'}}>
-            {form.home_logo && <img src={`http://localhost:4000${form.home_logo}`} style={{width:'36px',height:'36px',objectFit:'contain'}} />}
+            {form.home_logo && <img src={`${form.home_logo}`} style={{width:'36px',height:'36px',objectFit:'contain'}} />}
             <button type="button" className="btn-sm" onClick={() => homeRef.current.click()}>{f.homeLogo}</button>
             <input ref={homeRef} type="file" accept="image/*" style={{display:'none'}} onChange={e=>setHomeFile(e.target.files[0])} />
             {homeFile && <span style={{fontSize:'0.75rem',color:'var(--muted)'}}>{homeFile.name}</span>}
@@ -706,7 +706,7 @@ function MatchTab({ token }) {
         <label className="label">{f.away}
           <input className="inp" value={form.away_team||''} onChange={e=>setForm({...form,away_team:e.target.value})} />
           <div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'6px'}}>
-            {form.away_logo && <img src={`http://localhost:4000${form.away_logo}`} style={{width:'36px',height:'36px',objectFit:'contain'}} />}
+            {form.away_logo && <img src={`${form.away_logo}`} style={{width:'36px',height:'36px',objectFit:'contain'}} />}
             <button type="button" className="btn-sm" onClick={() => awayRef.current.click()}>{f.awayLogo}</button>
             <input ref={awayRef} type="file" accept="image/*" style={{display:'none'}} onChange={e=>setAwayFile(e.target.files[0])} />
             {awayFile && <span style={{fontSize:'0.75rem',color:'var(--muted)'}}>{awayFile.name}</span>}
@@ -767,7 +767,7 @@ function SponsorsTab({ token }) {
       <div className="item-list">
         {items.map(s => (
           <div className="item-card" key={s.id}>
-            <img src={`http://localhost:4000${s.logo_path}`} alt={s.name} style={{width:'52px',height:'40px',objectFit:'contain',background:'#fff',borderRadius:'6px',padding:'2px'}} onError={e=>e.target.style.display='none'} />
+            <img src={`${s.logo_path}`} alt={s.name} style={{width:'52px',height:'40px',objectFit:'contain',background:'#fff',borderRadius:'6px',padding:'2px'}} onError={e=>e.target.style.display='none'} />
             <div className="card-info">
               <span className="card-name">{s.name}</span>
               <span className="card-sub">{s.website_url}</span>
@@ -787,7 +787,7 @@ function SponsorsTab({ token }) {
             <label className="label">{f.order}<input className="inp" type="number" value={form.sort_order||'0'} onChange={e=>setForm({...form,sort_order:e.target.value})} /></label>
             <label className="label" style={{gridColumn:'1/-1'}}>{f.website}<input className="inp" value={form.website_url||''} onChange={e=>setForm({...form,website_url:e.target.value})} /></label>
             <label className="label" style={{gridColumn:'1/-1'}}>{f.logo}
-              <PhotoUpload current={form.logo_path ? `http://localhost:4000${form.logo_path}` : ''} onChange={setLogoFile} />
+              <PhotoUpload current={form.logo_path ? `${form.logo_path}` : ''} onChange={setLogoFile} />
             </label>
           </div>
           <div className="modal-foot">
