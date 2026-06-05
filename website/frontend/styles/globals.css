@@ -732,11 +732,86 @@ tr:hover {
   margin-top: auto;
   color: var(--accent);
   font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
   transition: color 0.2s ease;
 }
 
 .read-more:hover {
   color: var(--primary);
+}
+
+/* ── Modal njoftimi ── */
+.ann-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.ann-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 32px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 82vh;
+  overflow-y: auto;
+  animation: fadeInUp 0.22s ease;
+}
+
+.ann-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.ann-close {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+.ann-close:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ann-modal-title {
+  margin: 0 0 16px;
+  font-size: 1.35rem;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.ann-modal-body {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.75;
+  font-size: 1rem;
+  white-space: pre-line;
 }
 
 /* Quick Links Section */

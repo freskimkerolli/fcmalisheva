@@ -8,6 +8,7 @@ export default function Home() {
   const { t, locale } = useTranslation();
   const [announcements, setAnnouncements] = useState([]);
   const [match, setMatch] = useState(null);
+  const [selectedAnn, setSelectedAnn] = useState(null);
 
   useEffect(() => {
     fetch(`${API_URL}/announcements`).then((r) => r.json()).then((data) => setAnnouncements(data)).catch(() => {});
@@ -98,21 +99,50 @@ export default function Home() {
       <section className="announcements-section">
         <h2 className="section-title">{t("home.latestNews")}</h2>
         <div className="announcements-grid">
-          {announcements.map((a) => (
-            <article key={a.id} className="announcement-card">
-              <div className="announcement-header">
-                <span className="category-badge">
-                  {locale === "en" ? (a.category_en || a.category) : a.category}
-                </span>
-                <span className="announcement-date">{a.date_display}</span>
-              </div>
-              <h3>{locale === "en" ? (a.title_en || a.title) : a.title}</h3>
-              <p>{locale === "en" ? (a.content_en || a.content) : a.content}</p>
-              <a href="#" className="read-more">{t("home.readMore")}</a>
-            </article>
-          ))}
+          {announcements.map((a) => {
+            const content = locale === "en" ? (a.content_en || a.content) : a.content;
+            const preview = content && content.length > 120 ? content.slice(0, 120).trimEnd() + "…" : content;
+            return (
+              <article key={a.id} className="announcement-card">
+                <div className="announcement-header">
+                  <span className="category-badge">
+                    {locale === "en" ? (a.category_en || a.category) : a.category}
+                  </span>
+                  <span className="announcement-date">{a.date_display}</span>
+                </div>
+                <h3>{locale === "en" ? (a.title_en || a.title) : a.title}</h3>
+                <p>{preview}</p>
+                <button className="read-more" onClick={() => setSelectedAnn(a)}>
+                  {t("home.readMore")}
+                </button>
+              </article>
+            );
+          })}
         </div>
       </section>
+
+      {/* Modal njoftim i plotë */}
+      {selectedAnn && (
+        <div className="ann-overlay" onClick={() => setSelectedAnn(null)}>
+          <div className="ann-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="ann-modal-head">
+              <div style={{ display:"flex", alignItems:"center", gap:"10px", flexWrap:"wrap" }}>
+                <span className="category-badge">
+                  {locale === "en" ? (selectedAnn.category_en || selectedAnn.category) : selectedAnn.category}
+                </span>
+                <span className="announcement-date">{selectedAnn.date_display}</span>
+              </div>
+              <button className="ann-close" onClick={() => setSelectedAnn(null)} aria-label={t("home.close")}>✕</button>
+            </div>
+            <h2 className="ann-modal-title">
+              {locale === "en" ? (selectedAnn.title_en || selectedAnn.title) : selectedAnn.title}
+            </h2>
+            <p className="ann-modal-body">
+              {locale === "en" ? (selectedAnn.content_en || selectedAnn.content) : selectedAnn.content}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Quick Links */}
       <section className="quick-links-section">
