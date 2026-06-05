@@ -1418,6 +1418,7 @@ tr:hover {
   .section-title { font-size: 1.3rem; }
 
   .upcoming-match-section { padding: 18px 12px; border-radius: 20px; }
+  .uecl-corner-logo { display: none; }
   .match-header { margin-bottom: 20px; gap: 4px; }
   .competition-badge { font-size: 0.65rem; }
   .stadium-info { font-size: 0.65rem; }

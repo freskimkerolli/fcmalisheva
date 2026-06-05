@@ -32,6 +32,7 @@ export default function Home() {
             <img
               src="/assets/logos/UECL-Logo.png"
               alt="UECL"
+              className="uecl-corner-logo"
               style={{
                 position:"absolute", bottom:"14px", left:"14px",
                 height:"140px", width:"auto",
