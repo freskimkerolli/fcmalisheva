@@ -134,6 +134,15 @@ async function seedIfEmpty(client) {
   console.log("PostgreSQL: të dhënat fillestare u ngarkuan.");
 }
 
+async function migratePhotoPlaceholder(client) {
+  await client.query(
+    "UPDATE players SET photo='' WHERE photo='/assets/player_placeholder.jpg'"
+  );
+  await client.query(
+    "UPDATE staff SET photo='' WHERE photo='/assets/player_placeholder.jpg'"
+  );
+}
+
 async function migrateNationalities(client) {
   const updates = [
     ["Kosovare",    "Kosovar"],
@@ -156,6 +165,7 @@ async function tryConnect(url) {
   const client = await p.connect();
   await client.query(SCHEMA);
   await seedIfEmpty(client);
+  await migratePhotoPlaceholder(client);
   await migrateNationalities(client);
   client.release();
   return p;
