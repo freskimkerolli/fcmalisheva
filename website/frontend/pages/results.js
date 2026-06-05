@@ -69,7 +69,7 @@ export default function Results() {
         />
       </section>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "28px", alignItems: "start" }}>
+      <div className="results-layout">
 
         {/* ── E majta: 5 ndeshjet e fundit ── */}
         <div>

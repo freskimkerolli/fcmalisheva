@@ -1261,14 +1261,46 @@ tr:hover {
   }
 }
 
+/* ── Hamburger button (ascuns pe desktop) ─────────── */
+.burger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--text);
+  margin-left: 8px;
+  line-height: 1;
+  transition: background 0.15s;
+}
+.burger-btn:hover { background: rgba(15,23,42,0.06); }
+
+/* Nav overlay (mbyll menunë kur klikohet jashtë) */
+.nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+  background: transparent;
+}
+
+/* ── Results layout ────────────────────────────────── */
+.results-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ── Tablet: ≤ 900px ───────────────────────────────── */
 @media (max-width: 900px) {
   .hero-section,
   .page-hero {
     grid-template-columns: 1fr;
-  }
-
-  .nav-menu {
-    padding-left: 24px;
   }
 
   .shop-grid,
@@ -1277,22 +1309,130 @@ tr:hover {
   .section-panels {
     grid-template-columns: 1fr;
   }
+
+  .results-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
-@media (max-width: 640px) {
-  .site-header {
-    padding: 0;
-  }
+/* ── Mobile: ≤ 768px ───────────────────────────────── */
+@media (max-width: 768px) {
 
+  /* Header: 2 kolona (brand + spacer) */
   .header-inner {
-    flex-direction: column;
-    align-items: flex-start;
+    grid-template-columns: 1fr auto;
+    padding: 10px 16px;
+    position: relative;
   }
 
+  /* Hamburger i dukshëm */
+  .burger-btn { display: flex; }
+
+  /* Nav: dropdown i fshehur */
   .nav-menu {
-    justify-content: center;
-    padding-left: 18px;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,0.98);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 8px 16px 16px;
+    gap: 2px;
+    z-index: 50;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
   }
+  .nav-menu.nav-open { display: flex; }
+  .nav-menu a {
+    padding: 13px 16px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 1rem;
+    width: 100%;
+  }
+  .nav-menu a:hover { background: rgba(15,23,42,0.05); }
+
+  /* Overlay aktive kur nav hapur */
+  .nav-open ~ .nav-overlay,
+  .nav-overlay { display: block; }
+
+  /* Page container */
+  .page-container { padding: 20px 16px 48px; }
+
+  /* Upcoming match */
+  .upcoming-match-section { padding: 24px 16px; }
+  .match-header {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 4px;
+  }
+  .stadium-info { text-align: center; }
+  .match-container { gap: 12px; }
+  .team img { width: 64px; height: 64px; }
+  .team h3 { font-size: 1rem; }
+  .match-time { font-size: 1.5rem; }
+
+  /* Footer */
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    text-align: center;
+  }
+  .footer-section { align-items: center; }
+  .footer-logo { margin: 0 auto; }
+  .sponsors-grid { justify-content: center; }
+  .social-links { justify-content: center; }
+
+  /* Section title */
+  .section-title { font-size: 1.6rem; }
+
+  /* Checkout */
+  .form-row { grid-template-columns: 1fr; }
+  .checkout-content { padding: 24px 16px; }
+  .progress-bar { gap: 6px; }
+  .progress-bar .step span { width: 36px; height: 36px; font-size: 0.85rem; }
+  .progress-bar .step p { font-size: 0.75rem; }
+
+  /* Cards */
+  .cards-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .gallery-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+
+  /* Jerseys */
+  .jerseys-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Telefon i vogël: ≤ 480px ──────────────────────── */
+@media (max-width: 480px) {
+  .site-title { font-size: 0.95rem; }
+  .logo { width: 44px; }
+  .header-inner { padding: 8px 12px; }
+
+  .page-container { padding: 16px 12px 40px; }
+  .section-title { font-size: 1.3rem; }
+
+  .upcoming-match-section { padding: 18px 12px; border-radius: 20px; }
+  .match-container { gap: 8px; }
+  .team img { width: 52px; height: 52px; }
+  .team h3 { font-size: 0.9rem; }
+  .match-time { font-size: 1.3rem; }
+
+  .panel-card,
+  .feature-card,
+  .card,
+  .shop-card,
+  .content-block { padding: 18px; border-radius: 18px; }
+
+  .announcement-card { padding: 18px; }
+
+  .quick-links-grid { grid-template-columns: 1fr 1fr; }
+  .quick-link-card { padding: 18px 14px; border-radius: 18px; }
+  .quick-link-card h3 { font-size: 1.1rem; }
+
+  .cards-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
 }
 
 @keyframes fadeInDown {
