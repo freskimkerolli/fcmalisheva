@@ -77,6 +77,22 @@ function auth(req, res, next) {
   }
 }
 
+// ── Debug / Status ────────────────────────────────────────────────────────────
+app.get("/api/debug", async (req, res) => {
+  try {
+    const players = await store.getPlayers();
+    const p1 = players.find(p => Number(p.id) === 1) || players[0];
+    res.json({
+      cloudinary_enabled: CLOUDINARY_ENABLED,
+      cloudinary_cloud: process.env.CLOUDINARY_CLOUD_NAME || null,
+      player1_name: p1?.name,
+      player1_photo: p1?.photo,
+    });
+  } catch (e) {
+    res.json({ error: e.message });
+  }
+});
+
 // ── Routes Publike (pa autentikim, për frontend Vercel) ───────────────────────
 app.get("/api/team",           async (req, res) => { try { res.json(await store.getPlayers()); }        catch (e) { res.status(500).json({ error: e.message }); } });
 app.get("/api/staff",          async (req, res) => { try { res.json(await store.getStaff()); }          catch (e) { res.status(500).json({ error: e.message }); } });
