@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { useTranslation } from "../hooks/useTranslation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://fcmalisheva-production.up.railway.app/api";
 const BACKEND = API_URL.replace(/\/api$/, "");
 
 function resolvePhoto(photo) {

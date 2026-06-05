@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "../hooks/useTranslation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://fcmalisheva-production.up.railway.app/api";
 
 export default function Home() {
   const { t, locale } = useTranslation();
@@ -18,68 +18,80 @@ export default function Home() {
     <>
       {/* Upcoming Match */}
       {match && (
-        <section
-          className="upcoming-match-section"
-          style={{
-            position:"relative", overflow:"hidden",
-            ...(match.competition?.toLowerCase().includes("conference") ? {
-              background:"#0a0a0a",
-              border:"1px solid rgba(255,255,255,0.1)",
-            } : {}),
-          }}
-        >
-          {match.competition?.toLowerCase().includes("conference") && (
+        match.competition?.toLowerCase().includes("conference") ? (
+          /* ── UCL Layout: logo poshtë majtas, ndeshja lart djathtas ── */
+          <section
+            className="upcoming-match-section ucl-section"
+            style={{ background:"#0a0a0a", border:"1px solid rgba(255,255,255,0.1)", position:"relative", overflow:"hidden", minHeight:"260px" }}
+          >
+            {/* UCL logo — poshtë majtas */}
             <img
               src="/assets/logos/UECL-Logo.png"
               alt="UECL"
               className="uecl-corner-logo"
-              style={{
-                position:"absolute", bottom:"14px", left:"14px",
-                height:"140px", width:"auto",
-                objectFit:"contain",
-                mixBlendMode:"screen",
-                pointerEvents:"none",
-              }}
+              style={{ position:"absolute", bottom:"14px", left:"14px", height:"190px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none" }}
             />
-          )}
-          {(() => {
-            const dark = match.competition?.toLowerCase().includes("conference");
-            const txt = dark ? {color:"#fff"} : undefined;
-            const muted = dark ? {color:"#fff"} : undefined;
-            return (
-              <>
-                <div className="match-header">
-                  <span className="competition-badge" style={dark ? {color:"#fff"} : undefined}>{t("home.nextMatch")}</span>
-                  {dark ? (
-                    <span style={{fontSize:"0.85rem", fontWeight:600, letterSpacing:"0.06em", textTransform:"uppercase", color:"#fff"}}>
-                      UEFA Conference League
-                    </span>
-                  ) : (
-                    <img src="/assets/logos/albi-mall-superliga.d81b909e28ccd58241ed.png" alt="Albi Mall Superliga" style={{height:"60px", width:"auto", objectFit:"contain"}} />
-                  )}
-                  <span className="stadium-info" style={dark ? {color:"#fff"} : {color:"var(--accent)"}}>{match.stadium}</span>
+
+            {/* Ndeshja — lart djathtas */}
+            <div style={{ position:"relative", zIndex:1, display:"flex", flexDirection:"column", alignItems:"flex-end", gap:"10px" }}>
+              {/* Header */}
+              <div style={{ textAlign:"right" }}>
+                <div style={{ fontSize:"0.72rem", color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:"2px" }}>{t("home.nextMatch")}</div>
+                <div style={{ fontSize:"0.82rem", fontWeight:700, color:"#fff", textTransform:"uppercase", letterSpacing:"0.08em" }}>UEFA Conference League</div>
+                <div style={{ fontSize:"0.75rem", color:"rgba(255,255,255,0.55)", textTransform:"uppercase", letterSpacing:"0.06em", marginTop:"2px" }}>{match.stadium}</div>
+              </div>
+
+              {/* Ekipet */}
+              <div style={{ display:"flex", alignItems:"center", gap:"14px" }}>
+                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"5px" }}>
+                  <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} style={{ width:"60px", height:"60px", objectFit:"contain" }} />
+                  <span style={{ color:"#fff", fontSize:"0.85rem", fontWeight:600, textAlign:"center" }}>{match.home_team}</span>
                 </div>
-                <div className="match-container">
-                  <div className="team team-home">
-                    <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} />
-                    <h3 style={txt}>{match.home_team}</h3>
-                  </div>
-                  <div className="match-details">
-                    <p className="match-date" style={dark ? {color:"#fff"} : {color:"var(--accent)"}}>{match.match_date}</p>
-                    <p className="match-time" style={txt}>{match.match_time}</p>
-                  </div>
-                  <div className="team team-away">
-                    <img src={match.away_logo || "/assets/MalishevaLogo.png"} alt={match.away_team} />
-                    <h3 style={txt}>{match.away_team}</h3>
-                  </div>
+                <span style={{ color:"rgba(255,255,255,0.5)", fontWeight:700, fontSize:"1rem" }}>vs</span>
+                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"5px" }}>
+                  <img src={match.away_logo || "/assets/MalishevaLogo.png"} alt={match.away_team} style={{ width:"60px", height:"60px", objectFit:"contain" }} />
+                  <span style={{ color:"#fff", fontSize:"0.85rem", fontWeight:600, textAlign:"center" }}>{match.away_team}</span>
                 </div>
-                <a href={match.ticket_url || "#"} className="button tickets-btn">
-                  🎫 {t("home.buyTickets")}
-                </a>
-              </>
-            );
-          })()}
-        </section>
+              </div>
+
+              {/* Data & ora */}
+              <p style={{ color:"var(--accent)", margin:0, fontSize:"0.9rem", fontWeight:600 }}>
+                {match.match_date}{match.match_time ? ` · ${match.match_time}` : ""}
+              </p>
+
+              {/* Bileta */}
+              <a href={match.ticket_url || "#"} className="button tickets-btn" style={{ marginTop:"2px" }}>
+                🎫 {t("home.buyTickets")}
+              </a>
+            </div>
+          </section>
+        ) : (
+          /* ── Layout standard (Superliga etj.) ── */
+          <section className="upcoming-match-section">
+            <div className="match-header">
+              <span className="competition-badge">{t("home.nextMatch")}</span>
+              <img src="/assets/logos/albi-mall-superliga.d81b909e28ccd58241ed.png" alt="Albi Mall Superliga" style={{height:"60px", width:"auto", objectFit:"contain"}} />
+              <span className="stadium-info" style={{color:"var(--accent)"}}>{match.stadium}</span>
+            </div>
+            <div className="match-container">
+              <div className="team team-home">
+                <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} />
+                <h3>{match.home_team}</h3>
+              </div>
+              <div className="match-details">
+                <p className="match-date" style={{color:"var(--accent)"}}>{match.match_date}</p>
+                <p className="match-time">{match.match_time}</p>
+              </div>
+              <div className="team team-away">
+                <img src={match.away_logo || "/assets/MalishevaLogo.png"} alt={match.away_team} />
+                <h3>{match.away_team}</h3>
+              </div>
+            </div>
+            <a href={match.ticket_url || "#"} className="button tickets-btn">
+              🎫 {t("home.buyTickets")}
+            </a>
+          </section>
+        )
       )}
 
       {/* Announcements */}
