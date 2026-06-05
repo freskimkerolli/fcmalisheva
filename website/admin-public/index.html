@@ -847,14 +847,6 @@ function App() {
           </div>
         </div>
 
-        {/* Site navigation */}
-        <div className="site-nav">
-          <span className="site-nav-label">{tr.siteLabel}</span>
-          {Object.entries(tr.nav).map(([key, label]) => (
-            <a key={key} href={key === 'home' ? SITE : `${SITE}/${key}`} target="_blank" rel="noreferrer">{label}</a>
-          ))}
-        </div>
-
         {/* Tabs */}
         <nav className="tabs">
           {tr.tabs.map((tabName, i) => (
