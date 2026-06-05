@@ -1371,6 +1371,7 @@ tr:hover {
   .page-container { padding: 20px 16px 48px; }
 
   /* Upcoming match */
+  .uecl-corner-logo { display: none; }
   .upcoming-match-section { padding: 24px 16px; }
   .match-header {
     grid-template-columns: 1fr;
