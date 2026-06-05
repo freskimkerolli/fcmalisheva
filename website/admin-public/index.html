@@ -291,7 +291,7 @@ function PlayersTab({ token }) {
   useEffect(() => { load(); }, []);
 
   function openAdd() {
-    setForm({ name:'', position:'', number:'', nationality:'Kosovare', birthDate:'', height:'', weight:'', photo:'' });
+    setForm({ name:'', position:'', number:'', nationality:'Kosovar', birthDate:'', height:'', weight:'', photo:'' });
     setPhotoFile(null); setModal({ mode:'add' });
   }
   function openEdit(p) { setForm({...p}); setPhotoFile(null); setModal({ mode:'edit', id:p.id }); }

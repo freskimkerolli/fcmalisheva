@@ -134,11 +134,29 @@ async function seedIfEmpty(client) {
   console.log("PostgreSQL: të dhënat fillestare u ngarkuan.");
 }
 
+async function migrateNationalities(client) {
+  const updates = [
+    ["Kosovare",    "Kosovar"],
+    ["Maqedonase V.", "Maqedonas V."],
+    ["Shqiptare",   "Shqiptar"],
+    ["Amerikane",   "Amerikan"],
+    ["Senegalleze", "Senegalez"],
+    ["Daneze",      "Danez"],
+    ["Kameruneze",  "Kamerunez"],
+    ["Braziliane",  "Brazilian"],
+    ["Nigeriane",   "Nigerian"],
+  ];
+  for (const [old, next] of updates) {
+    await client.query("UPDATE players SET nationality=$1 WHERE nationality=$2", [next, old]);
+  }
+}
+
 async function tryConnect(url) {
   const p = new Pool({ connectionString: url, connectionTimeoutMillis: 3000 });
   const client = await p.connect();
   await client.query(SCHEMA);
   await seedIfEmpty(client);
+  await migrateNationalities(client);
   client.release();
   return p;
 }
