@@ -1370,10 +1370,10 @@ tr:hover {
     gap: 4px;
   }
   .stadium-info { text-align: center; }
-  .match-container { gap: 12px; }
-  .team img { width: 64px; height: 64px; }
-  .team h3 { font-size: 1rem; }
-  .match-time { font-size: 1.5rem; }
+  .match-container { gap: 8px; }
+  .team img { width: 54px; height: 54px; }
+  .team h3 { font-size: 0.9rem; }
+  .match-time { font-size: 1.3rem; }
 
   /* Footer */
   .footer-content {
@@ -1417,11 +1417,17 @@ tr:hover {
   .page-container { padding: 16px 12px 40px; }
   .section-title { font-size: 1.3rem; }
 
-  .upcoming-match-section { padding: 18px 12px; border-radius: 20px; }
-  .match-container { gap: 8px; }
-  .team img { width: 52px; height: 52px; }
-  .team h3 { font-size: 0.9rem; }
-  .match-time { font-size: 1.3rem; }
+  .upcoming-match-section { padding: 14px 10px; border-radius: 16px; }
+  .match-header { margin-bottom: 12px; gap: 2px; }
+  .competition-badge { font-size: 0.65rem; }
+  .stadium-info { font-size: 0.65rem; }
+  .match-container { gap: 4px; margin-bottom: 14px; }
+  .team { gap: 5px; }
+  .team img { width: 40px; height: 40px; }
+  .team h3 { font-size: 0.72rem; }
+  .match-details { padding: 0 6px; gap: 2px; }
+  .match-date { font-size: 0.72rem; }
+  .match-time { font-size: 1.1rem; }
 
   .panel-card,
   .feature-card,
