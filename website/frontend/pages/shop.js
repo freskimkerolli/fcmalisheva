@@ -6,6 +6,12 @@ import { useTranslation } from "../hooks/useTranslation";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 const BACKEND = API_URL.replace(/\/api$/, "");
 
+function resolvePhoto(photo) {
+  if (!photo) return "";
+  if (photo.startsWith("http")) return photo;
+  return `${BACKEND}${photo}`;
+}
+
 export default function Shop() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -118,7 +124,7 @@ export default function Shop() {
                 const hasPhoto = photo && !photo.includes("placeholder");
                 return hasPhoto ? (
                   <img
-                    src={`${BACKEND}${photo}`}
+                    src={resolvePhoto(photo)}
                     alt={sel}
                     onError={(e) => { e.target.src = jersey.image; }}
                   />

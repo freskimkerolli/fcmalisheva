@@ -1383,7 +1383,11 @@ tr:hover {
   }
   .footer-section { align-items: center; }
   .footer-logo { margin: 0 auto; }
-  .sponsors-grid { justify-content: center; }
+  .sponsors-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+  }
   .social-links { justify-content: center; }
 
   /* Section title */

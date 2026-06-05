@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
 
 const { connectDatabase } = require("./backend/db");
@@ -15,32 +16,54 @@ const JWT_SECRET = process.env.JWT_SECRET || "fcmalisheva-admin-secret";
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "admin123";
 
+const CLOUDINARY_ENABLED = !!(
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET
+);
+
+if (CLOUDINARY_ENABLED) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "admin-public")));
 app.use("/assets", express.static(path.join(__dirname, "frontend", "public", "assets")));
 app.use("/assets", express.static(path.join(__dirname, "public", "assets")));
 
-// Foto upload → frontend/public/assets/
 const uploadDir = path.join(__dirname, "frontend", "public", "assets");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `upload_${Date.now()}${ext}`);
-  },
-});
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) cb(null, true);
     else cb(new Error("Vetëm imazhet lejohen"));
   },
   limits: { fileSize: 5 * 1024 * 1024 },
 });
+
+async function uploadPhoto(file) {
+  if (CLOUDINARY_ENABLED) {
+    return new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "fcmalisheva" },
+        (err, result) => { if (err) reject(err); else resolve(result.secure_url); }
+      );
+      stream.end(file.buffer);
+    });
+  }
+  // Fallback: ruaj në disk lokalisht
+  const ext = path.extname(file.originalname);
+  const filename = `upload_${Date.now()}${ext}`;
+  fs.writeFileSync(path.join(uploadDir, filename), file.buffer);
+  return `/assets/${filename}`;
+}
 
 // Auth middleware
 function auth(req, res, next) {
@@ -82,14 +105,14 @@ app.get("/api/players", auth, async (req, res) => {
 
 app.post("/api/players", auth, upload.single("photo"), async (req, res) => {
   try {
-    const photo = req.file ? `/assets/${req.file.filename}` : req.body.photo || "";
+    const photo = req.file ? await uploadPhoto(req.file) : req.body.photo || "";
     res.status(201).json(await store.createPlayer({ ...req.body, photo }));
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.put("/api/players/:id", auth, upload.single("photo"), async (req, res) => {
   try {
-    const photo = req.file ? `/assets/${req.file.filename}` : req.body.photo;
+    const photo = req.file ? await uploadPhoto(req.file) : req.body.photo;
     const player = await store.updatePlayer(req.params.id, { ...req.body, photo });
     if (!player) return res.status(404).json({ error: "Lojtari nuk u gjet" });
     res.json(player);
@@ -112,14 +135,14 @@ app.get("/api/staff", auth, async (req, res) => {
 
 app.post("/api/staff", auth, upload.single("photo"), async (req, res) => {
   try {
-    const photo = req.file ? `/assets/${req.file.filename}` : req.body.photo || "";
+    const photo = req.file ? await uploadPhoto(req.file) : req.body.photo || "";
     res.status(201).json(await store.createStaffMember({ ...req.body, photo }));
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.put("/api/staff/:id", auth, upload.single("photo"), async (req, res) => {
   try {
-    const photo = req.file ? `/assets/${req.file.filename}` : req.body.photo;
+    const photo = req.file ? await uploadPhoto(req.file) : req.body.photo;
     const member = await store.updateStaffMember(req.params.id, { ...req.body, photo });
     if (!member) return res.status(404).json({ error: "Anëtari nuk u gjet" });
     res.json(member);
@@ -143,7 +166,7 @@ app.get("/api/gallery", auth, async (req, res) => {
 app.post("/api/gallery", auth, upload.single("photo"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "Nuk u ngarkua foto" });
-    const url = await store.addGalleryPhoto(`/assets/${req.file.filename}`);
+    const url = await store.addGalleryPhoto(await uploadPhoto(req.file));
     res.status(201).json({ url });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -226,8 +249,8 @@ app.get("/api/upcoming-match", auth, async (req, res) => {
 app.put("/api/upcoming-match", auth, upload.fields([{ name: "home_logo_file" }, { name: "away_logo_file" }]), async (req, res) => {
   try {
     const data = { ...req.body };
-    if (req.files?.home_logo_file?.[0]) data.home_logo = `/assets/${req.files.home_logo_file[0].filename}`;
-    if (req.files?.away_logo_file?.[0]) data.away_logo = `/assets/${req.files.away_logo_file[0].filename}`;
+    if (req.files?.home_logo_file?.[0]) data.home_logo = await uploadPhoto(req.files.home_logo_file[0]);
+    if (req.files?.away_logo_file?.[0]) data.away_logo = await uploadPhoto(req.files.away_logo_file[0]);
     res.json(await store.updateUpcomingMatch(data));
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -240,14 +263,14 @@ app.get("/api/sponsors", auth, async (req, res) => {
 
 app.post("/api/sponsors", auth, upload.single("logo_file"), async (req, res) => {
   try {
-    const logo_path = req.file ? `/assets/${req.file.filename}` : req.body.logo_path || "";
+    const logo_path = req.file ? await uploadPhoto(req.file) : req.body.logo_path || "";
     res.status(201).json(await store.createSponsor({ ...req.body, logo_path }));
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.put("/api/sponsors/:id", auth, upload.single("logo_file"), async (req, res) => {
   try {
-    const logo_path = req.file ? `/assets/${req.file.filename}` : req.body.logo_path;
+    const logo_path = req.file ? await uploadPhoto(req.file) : req.body.logo_path;
     const s = await store.updateSponsor(req.params.id, { ...req.body, logo_path });
     if (!s) return res.status(404).json({ error: "Sponzori nuk u gjet" });
     res.json(s);

@@ -18,6 +18,12 @@ const POSITION_GROUPS = {
   "Sulmues":    ["Sulmues Qendror"],
 };
 
+function resolvePhoto(photo) {
+  if (!photo) return "";
+  if (photo.startsWith("http")) return photo;
+  return `${BACKEND}${photo}`;
+}
+
 function PlayerPhoto({ name, photo }) {
   const [failed, setFailed] = useState(false);
   const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -31,7 +37,7 @@ function PlayerPhoto({ name, photo }) {
   }
   return (
     <img
-      src={`${BACKEND}${photo}`}
+      src={resolvePhoto(photo)}
       alt={name}
       onError={() => setFailed(true)}
       style={{ width: "52px", height: "52px", borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
