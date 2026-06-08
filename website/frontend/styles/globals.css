@@ -860,6 +860,8 @@ tr:hover {
   padding: 24px;
   background: var(--surface);
   border-top: 1px solid var(--border);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .footer-content {
@@ -1376,7 +1378,12 @@ tr:hover {
   .header-inner { padding: 10px 20px; gap: 10px; }
   .nav-menu { gap: 2px; }
   .nav-menu a { padding: 6px 9px; font-size: 0.88rem; }
-  .uecl-corner-logo { height: 93px !important; bottom: 4px !important; }
+
+  /* UCL section */
+  .uecl-corner-logo { height: 80px !important; bottom: 6px !important; }
+  .ucl-teams-row { gap: 48px !important; }
+  .ucl-team-logo { width: 78px !important; height: 78px !important; }
+  .ucl-section { padding-left: 20px !important; padding-right: 20px !important; }
 }
 
 /* ── Tablet: ≤ 900px ───────────────────────────────── */
@@ -1445,8 +1452,7 @@ tr:hover {
   /* Page container */
   .page-container { padding: 20px 16px 48px; }
 
-  /* Upcoming match */
-  .uecl-corner-logo { display: none; }
+  /* Upcoming match (standard layout) */
   .upcoming-match-section { padding: 24px 16px; }
   .match-header {
     grid-template-columns: 1fr;
@@ -1458,6 +1464,12 @@ tr:hover {
   .team img { width: 54px; height: 54px; }
   .team h3 { font-size: 0.9rem; }
   .match-time { font-size: 1.3rem; }
+
+  /* UCL section — mobile */
+  .uecl-corner-logo { display: none !important; }
+  .ucl-section { padding: 20px 16px 60px !important; }
+  .ucl-teams-row { gap: 24px !important; }
+  .ucl-team-logo { width: 68px !important; height: 68px !important; }
 
   /* Footer */
   .footer-content {
@@ -1502,7 +1514,6 @@ tr:hover {
   .section-title { font-size: 1.3rem; }
 
   .upcoming-match-section { padding: 18px 12px; border-radius: 20px; }
-  .uecl-corner-logo { display: none; }
   .match-header { margin-bottom: 20px; gap: 4px; }
   .competition-badge { font-size: 0.65rem; }
   .stadium-info { font-size: 0.65rem; }
@@ -1513,6 +1524,12 @@ tr:hover {
   .match-details { padding: 0 6px; gap: 2px; }
   .match-date { font-size: 0.72rem; }
   .match-time { font-size: 1.1rem; }
+
+  /* UCL section — telefon i vogël */
+  .uecl-corner-logo { display: none !important; }
+  .ucl-section { padding: 16px 12px 56px !important; border-radius: 14px !important; }
+  .ucl-teams-row { gap: 14px !important; }
+  .ucl-team-logo { width: 52px !important; height: 52px !important; }
 
   .panel-card,
   .feature-card,

@@ -29,6 +29,7 @@ export default function Home() {
             <img
               src="/assets/logos/UECL-Logo.png"
               alt="UECL"
+              className="uecl-corner-logo"
               style={{ position:"absolute", bottom:"10px", left:"18px", height:"120px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none", opacity:0.9 }}
             />
 
@@ -53,22 +54,22 @@ export default function Home() {
             </div>
 
             {/* Qendra — logot + data/ora në mes */}
-            <div style={{ position:"relative", zIndex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:"72px" }}>
+            <div className="ucl-teams-row" style={{ position:"relative", zIndex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:"72px" }}>
               {/* Ekipi vendas */}
               <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"8px" }}>
-                <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} style={{ width:"90px", height:"90px", objectFit:"contain" }} />
+                <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} className="ucl-team-logo" style={{ width:"90px", height:"90px", objectFit:"contain" }} />
                 <span style={{ color:"#fff", fontSize:"0.9rem", fontWeight:600, textAlign:"center" }}>{match.home_team}</span>
               </div>
 
               {/* Data & ora — qendër */}
-              <div style={{ textAlign:"center", minWidth:"110px" }}>
+              <div style={{ textAlign:"center", minWidth:"100px" }}>
                 <div style={{ color:"#fff", fontSize:"0.92rem", fontWeight:700, lineHeight:1.3 }}>{match.match_date}</div>
                 {match.match_time && <div style={{ color:"#fff", fontSize:"0.88rem", fontWeight:600, marginTop:"4px" }}>{match.match_time}</div>}
               </div>
 
               {/* Ekipi mysafir */}
               <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"8px" }}>
-                <img src={match.away_logo || "/assets/MalishevaLogo.png"} alt={match.away_team} style={{ width:"90px", height:"90px", objectFit:"contain" }} />
+                <img src={match.away_logo || "/assets/MalishevaLogo.png"} alt={match.away_team} className="ucl-team-logo" style={{ width:"90px", height:"90px", objectFit:"contain" }} />
                 <span style={{ color:"#fff", fontSize:"0.9rem", fontWeight:600, textAlign:"center" }}>{match.away_team}</span>
               </div>
             </div>
