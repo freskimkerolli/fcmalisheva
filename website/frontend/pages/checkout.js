@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function Checkout() {
   const router = useRouter();
+  const { locale } = useTranslation();
   const [order, setOrder] = useState(null);
   const [step, setStep] = useState("payment-method");
   const [paymentMethod, setPaymentMethod] = useState("cash");
@@ -179,7 +181,7 @@ export default function Checkout() {
                   <input type="radio" name="payment" value="card" disabled />
                   <div className="option-content">
                     <span className="option-title">💳 Kartë Krediti / Debiti</span>
-                    <p>Se shpejti... <span style={{ background: "var(--accent)", color: "#fff", fontSize: "0.7rem", fontWeight: 700, padding: "2px 8px", borderRadius: "999px", marginLeft: "4px" }}>Duke ardhur</span></p>
+                    <p>{locale === "en" ? "Coming soon..." : "Se shpejti..."} <span style={{ background: "var(--accent)", color: "#fff", fontSize: "0.7rem", fontWeight: 700, padding: "2px 8px", borderRadius: "999px", marginLeft: "4px" }}>{locale === "en" ? "Coming Soon" : "Se Shpejti"}</span></p>
                   </div>
                 </label>
               </div>
