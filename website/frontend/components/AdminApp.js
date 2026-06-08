@@ -2,6 +2,12 @@ import { useState, useEffect, useRef, useContext, createContext } from 'react';
 
 const ADMIN_CSS = `
   :root { --bg:#0b0f1a;--surface:#121a2d;--surface-2:#16223c;--text:#e8eef8;--muted:#9cb1d1;--primary:#c88f2a;--danger:#f87171;--border:rgba(255,255,255,0.08); }
+  .site-header{background:rgba(255,255,255,0.96)!important;backdrop-filter:blur(22px);}
+  .site-header .site-title{color:#111827!important;}
+  .site-header .eyebrow{color:#1f4b8d!important;}
+  .site-header .nav-menu a{color:#111827!important;}
+  .site-header .lang-btn{color:#111827!important;border-color:rgba(15,23,42,0.08)!important;}
+  .site-header .burger-btn{color:#111827!important;border-color:rgba(15,23,42,0.12)!important;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
   input,select,button,textarea{font:inherit;}
