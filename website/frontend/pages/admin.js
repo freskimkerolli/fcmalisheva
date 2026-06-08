@@ -1,7 +1,16 @@
-export default function Admin() {
-  return null;
-}
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
 
-export async function getServerSideProps() {
-  return { notFound: true };
+const AdminApp = dynamic(() => import('../components/AdminApp'), { ssr: false });
+
+export default function AdminPage() {
+  return (
+    <>
+      <Head>
+        <title>FC Malisheva — Admin</title>
+        <link rel="icon" type="image/png" href="/assets/MalishevaLogo.png" />
+      </Head>
+      <AdminApp />
+    </>
+  );
 }
