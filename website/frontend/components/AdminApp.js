@@ -64,6 +64,21 @@ const ADMIN_CSS = `
   h4{color:var(--primary);margin-bottom:12px;}
   .lang-btn{padding:5px 12px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--muted);font-size:0.78rem;font-weight:600;cursor:pointer;}
   .lang-btn:hover{border-color:var(--primary);color:var(--primary);}
+  @media(max-width:640px){
+    .app{padding:20px 12px 40px;}
+    .tab-content{padding:16px 12px;}
+    .tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;}
+    .tab-btn{white-space:nowrap;padding:6px 12px;font-size:0.8rem;}
+    .result-row{flex-direction:column;align-items:stretch;gap:6px;}
+    .result-actions{flex-direction:column!important;gap:6px!important;}
+    .result-actions .btn-sm{width:100%;padding:9px 14px;text-align:center;font-size:0.85rem;}
+    .card-actions{flex-direction:column;}
+    .card-actions .btn-sm{width:100%;padding:9px 14px;text-align:center;font-size:0.85rem;}
+    .item-card{flex-wrap:wrap;}
+    .card-info{min-width:0;flex:1;}
+    .form-grid{grid-template-columns:1fr!important;}
+    .modal{padding:20px 16px;}
+  }
 `;
 
 const TRANSLATIONS = {
@@ -297,7 +312,7 @@ function ResultsTab({ token }) {
   return (
     <div>
       <div className="tab-head"><h3>{tr('title')} ({matches.length})</h3><button className="btn btn-primary" onClick={openAdd}>{tr('add')}</button></div>
-      <div className="item-list">{matches.map(m=>(<div className="result-row" key={m.id}><span className="result-date">{m.date}</span><span className="result-info">{m.isHome!==false?<><b>FC Malisheva</b> vs <b>{m.opponent}</b></>:<><b>{m.opponent}</b> vs <b>FC Malisheva</b></>} <span className="result-score">{m.score}</span></span><span className="result-meta">{m.matchday?`${m.matchday} · `:''}{m.competition}</span><div style={{display:'flex',gap:'6px',flexShrink:0}}><button className="btn-sm" onClick={()=>openEdit(m)}>{tr('edit')}</button><button className="btn-sm btn-danger" onClick={()=>del(m.id)}>{tr('del')}</button></div></div>))}</div>
+      <div className="item-list">{matches.map(m=>(<div className="result-row" key={m.id}><span className="result-date">{m.date}</span><span className="result-info">{m.isHome!==false?<><b>FC Malisheva</b> vs <b>{m.opponent}</b></>:<><b>{m.opponent}</b> vs <b>FC Malisheva</b></>} <span className="result-score">{m.score}</span></span><span className="result-meta">{m.matchday?`${m.matchday} · `:''}{m.competition}</span><div className="result-actions" style={{display:'flex',gap:'6px',flexShrink:0}}><button className="btn-sm" onClick={()=>openEdit(m)}>{tr('edit')}</button><button className="btn-sm btn-danger" onClick={()=>del(m.id)}>{tr('del')}</button></div></div>))}</div>
       <div className="section-gap"><h4>{tr('tableTitle')}</h4><table><thead><tr><th>{tr('th.pos')}</th><th>{tr('th.team')}</th><th>{tr('th.played')}</th><th>{tr('th.pts')}</th></tr></thead><tbody>{table.map((r,i)=>(<tr key={i} className={r.team==='FC Malisheva'?'hl':''}><td>{r.position}</td><td>{r.team}</td><td>{r.played}</td><td><b>{r.points}</b></td></tr>))}</tbody></table></div>
       {modal&&(<Modal title={modal.mode==='add'?tr('addTitle'):t('results.editTitle')} onClose={()=>setModal(null)}><div className="form-grid"><label className="label">{tr('f.date')}<input className="inp" type="date" value={form.date} onChange={e=>setForm({...form,date:e.target.value})}/></label><label className="label">{tr('f.matchday')}<input className="inp" placeholder="p.sh. Java 36" value={form.matchday} onChange={e=>setForm({...form,matchday:e.target.value})}/></label><label className="label">{tr('f.opp')}<input className="inp" placeholder="p.sh. Drita" value={form.opponent} onChange={e=>setForm({...form,opponent:e.target.value})}/></label><label className="label">{tr('f.score')}<input className="inp" placeholder="2-1" value={form.score} onChange={e=>setForm({...form,score:e.target.value})}/></label><label className="label">{tr('f.comp')}<input className="inp" placeholder={tr('f.compPH')} value={form.competition} onChange={e=>setForm({...form,competition:e.target.value})}/></label><label className="label">{tr('f.venue')}<input className="inp" placeholder={tr('f.venuePH')} value={form.venue} onChange={e=>setForm({...form,venue:e.target.value})}/></label><label className="label" style={{gridColumn:'1/-1'}}>Pozicioni i FC Malishevës<div style={{display:'flex',gap:'20px',marginTop:'8px'}}><label style={{display:'flex',alignItems:'center',gap:'6px',cursor:'pointer',fontWeight:form.isHome!==false?700:400}}><input type="radio" name="isHome" checked={form.isHome!==false} onChange={()=>setForm({...form,isHome:true})}/>🏠 Vendas</label><label style={{display:'flex',alignItems:'center',gap:'6px',cursor:'pointer',fontWeight:form.isHome===false?700:400}}><input type="radio" name="isHome" checked={form.isHome===false} onChange={()=>setForm({...form,isHome:false})}/>✈️ Mysafir</label></div></label></div><div className="modal-foot"><button className="btn btn-outline" onClick={()=>setModal(null)}>{tr('cancel')}</button><button className="btn btn-primary" onClick={save} disabled={saving}>{saving?tr('saving'):tr('save')}</button></div></Modal>)}
     </div>
