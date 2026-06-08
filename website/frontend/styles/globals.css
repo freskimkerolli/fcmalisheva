@@ -584,7 +584,7 @@ tr:hover {
 
 .competition-badge {
   font-size: 0.9rem;
-  color: var(--accent);
+  color: var(--primary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
