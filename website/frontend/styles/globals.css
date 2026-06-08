@@ -596,6 +596,7 @@ tr:hover {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   text-align: right;
+  font-weight: 700;
 }
 
 .match-container {
@@ -644,6 +645,7 @@ tr:hover {
   font-size: 0.95rem;
   color: var(--muted);
   margin: 0;
+  font-weight: 700;
 }
 
 .match-time {
