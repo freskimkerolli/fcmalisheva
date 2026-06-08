@@ -1472,9 +1472,15 @@ tr:hover {
 
   /* UCL section — mobile */
   .uecl-corner-logo { display: none !important; }
-  .ucl-section { padding: 20px 16px 60px !important; }
-  .ucl-teams-row { gap: 24px !important; }
-  .ucl-team-logo { width: 68px !important; height: 68px !important; }
+  .ucl-section { padding: 16px 14px 56px !important; gap: 14px !important; }
+  .ucl-teams-row { gap: 18px !important; }
+  .ucl-team-logo { width: 60px !important; height: 60px !important; }
+  .ucl-team-name { font-size: 0.72rem !important; }
+  .ucl-label, .ucl-stadium { font-size: 0.6rem !important; letter-spacing: 0.06em !important; }
+  .ucl-title { font-size: 0.68rem !important; letter-spacing: 0.04em !important; }
+  .ucl-date { font-size: 0.75rem !important; }
+  .ucl-time { font-size: 0.72rem !important; }
+  .ucl-section .tickets-btn { padding: 9px 16px !important; font-size: 0.82rem !important; }
 
   /* Footer */
   .footer-content {
@@ -1532,9 +1538,15 @@ tr:hover {
 
   /* UCL section — telefon i vogël */
   .uecl-corner-logo { display: none !important; }
-  .ucl-section { padding: 16px 12px 56px !important; border-radius: 14px !important; }
-  .ucl-teams-row { gap: 14px !important; }
-  .ucl-team-logo { width: 52px !important; height: 52px !important; }
+  .ucl-section { padding: 14px 12px 52px !important; gap: 12px !important; border-radius: 14px !important; }
+  .ucl-teams-row { gap: 12px !important; }
+  .ucl-team-logo { width: 48px !important; height: 48px !important; }
+  .ucl-team-name { font-size: 0.65rem !important; }
+  .ucl-label, .ucl-stadium { font-size: 0.55rem !important; letter-spacing: 0.04em !important; }
+  .ucl-title { font-size: 0.6rem !important; }
+  .ucl-date { font-size: 0.7rem !important; }
+  .ucl-time { font-size: 0.68rem !important; }
+  .ucl-section .tickets-btn { padding: 8px 14px !important; font-size: 0.78rem !important; }
 
   .panel-card,
   .feature-card,
