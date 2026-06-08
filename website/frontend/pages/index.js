@@ -29,7 +29,7 @@ export default function Home() {
             <img
               src="/assets/logos/UECL-Logo.png"
               alt="UECL"
-              style={{ position:"absolute", bottom:"10px", left:"18px", height:"88px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none", opacity:0.9 }}
+              style={{ position:"absolute", bottom:"10px", left:"18px", height:"120px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none", opacity:0.9 }}
             />
 
             {/* Buy Tickets — qendër poshtë */}
@@ -62,7 +62,6 @@ export default function Home() {
 
               {/* Data & ora — qendër */}
               <div style={{ textAlign:"center", minWidth:"110px" }}>
-                <div style={{ fontSize:"0.65rem", color:"#fff", letterSpacing:"0.1em", marginBottom:"6px" }}>vs</div>
                 <div style={{ color:"#fff", fontSize:"0.92rem", fontWeight:700, lineHeight:1.3 }}>{match.match_date}</div>
                 {match.match_time && <div style={{ color:"#fff", fontSize:"0.88rem", fontWeight:600, marginTop:"4px" }}>{match.match_time}</div>}
               </div>
