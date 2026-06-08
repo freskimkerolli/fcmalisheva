@@ -175,17 +175,11 @@ export default function Checkout() {
                   </div>
                 </label>
 
-                <label className="payment-option">
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="card"
-                    checked={paymentMethod === "card"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  />
+                <label className="payment-option" style={{ opacity: 0.5, cursor: "not-allowed" }}>
+                  <input type="radio" name="payment" value="card" disabled />
                   <div className="option-content">
                     <span className="option-title">💳 Kartë Krediti / Debiti</span>
-                    <p>Pagesa e sigurt online me Stripe — Visa, Mastercard etj.</p>
+                    <p>Se shpejti... <span style={{ background: "var(--accent)", color: "#fff", fontSize: "0.7rem", fontWeight: 700, padding: "2px 8px", borderRadius: "999px", marginLeft: "4px" }}>Duke ardhur</span></p>
                   </div>
                 </label>
               </div>
