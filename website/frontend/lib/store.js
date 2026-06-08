@@ -32,6 +32,7 @@ export async function createPlayer(data) {
   const pool = await getPool();
   const { name, position, number, photo, nationality, birthDate, height, weight, captain } = data;
   const isCaptain = captain === true || captain === 'true';
+  if (isCaptain) await pool.query('UPDATE players SET captain=false');
   const { rows } = await pool.query(
     `INSERT INTO players (name,position,number,photo,nationality,birth_date,height,weight,captain)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
@@ -43,6 +44,7 @@ export async function updatePlayer(id, data) {
   const pool = await getPool();
   const { name, position, number, photo, nationality, birthDate, height, weight, captain } = data;
   const isCaptain = captain === true || captain === 'true';
+  if (isCaptain) await pool.query('UPDATE players SET captain=false WHERE id!=$1', [Number(id)]);
   const { rows } = await pool.query(
     `UPDATE players SET name=$1,position=$2,number=$3,photo=$4,nationality=$5,
      birth_date=$6,height=$7,weight=$8,captain=$9 WHERE id=$10 RETURNING *`,
