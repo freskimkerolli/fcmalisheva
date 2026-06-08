@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useContext, createContext } from 'react';
+import { createPortal } from 'react-dom';
 
 const ADMIN_CSS = `
   :root { --bg:#0b0f1a;--surface:#121a2d;--surface-2:#16223c;--text:#e8eef8;--muted:#9cb1d1;--primary:#c88f2a;--danger:#f87171;--border:rgba(255,255,255,0.08); }
@@ -13,9 +14,8 @@ const ADMIN_CSS = `
   input,select,button,textarea{font:inherit;}
   img{max-width:100%;display:block;}
   .app{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
-  .app-header{display:flex;align-items:center;justify-content:flex-end;margin-bottom:24px;gap:10px;}
+  .app-header{display:none;}
   .app-title{display:none;}
-  .app-title span{display:none;}
   .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
   .login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:400px;}
   .login-card h2{color:var(--primary);font-size:1.4rem;margin-bottom:4px;}
@@ -418,8 +418,19 @@ function App() {
 
   if (!token) return <Login onLogin={t=>{setToken(t);}} lang={lang} setLang={l=>{setLang(l);localStorage.setItem('admin_lang',l);}}/>;
 
+  const headerTarget = typeof document !== 'undefined' ? document.getElementById('admin-header-actions') : null;
+  const headerButtons = (
+    <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+      <button className="lang-btn" onClick={switchLang} style={{display:'flex',alignItems:'center',gap:'6px'}}>
+        {lang==='sq'?<><img src="/assets/logos/Gb.jpg" alt="EN" style={{width:'22px',height:'15px',objectFit:'cover',borderRadius:'2px'}}/><span>EN</span></>:<><img src="/assets/logos/Al.jpg" alt="SQ" style={{width:'22px',height:'15px',objectFit:'cover',borderRadius:'2px'}}/><span>SQ</span></>}
+      </button>
+      <button className="lang-btn" style={{color:'#dc2626',borderColor:'rgba(220,38,38,0.3)'}} onClick={()=>{localStorage.removeItem('admin_token');setToken(null);}}>{tr.logout}</button>
+    </div>
+  );
+
   return (
     <LangCtx.Provider value={{t,lang}}>
+      {headerTarget && createPortal(headerButtons, headerTarget)}
       <div className="app">
         <div className="app-header">
           <div className="app-title">FC Malisheva <span> - {lang==='sq'?'Paneli i Administratorit':'Admin Panel'}</span></div>

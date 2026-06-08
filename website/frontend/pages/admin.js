@@ -15,15 +15,7 @@ function AdminHeader() {
           <img src="/assets/MalishevaLogo.png" alt="FC Malisheva" className="logo" />
           <span className="site-title">FC Malisheva</span>
         </Link>
-        <div className="header-spacer">
-          <button onClick={switchLocale} className="lang-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {locale === 'en' ? (
-              <><img src="/assets/logos/Al.jpg" alt="SQ" style={{ width: '22px', height: '15px', objectFit: 'cover', borderRadius: '2px' }} /><span>SQ</span></>
-            ) : (
-              <><img src="/assets/logos/Gb.jpg" alt="EN" style={{ width: '22px', height: '15px', objectFit: 'cover', borderRadius: '2px' }} /><span>EN</span></>
-            )}
-          </button>
-        </div>
+        <div className="header-spacer" id="admin-header-actions" style={{ gap: '8px' }} />
       </div>
     </header>
   );
