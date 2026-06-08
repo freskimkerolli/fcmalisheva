@@ -64,12 +64,15 @@ const ADMIN_CSS = `
   h4{color:var(--primary);margin-bottom:12px;}
   .lang-btn{padding:5px 12px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--muted);font-size:0.78rem;font-weight:600;cursor:pointer;}
   .lang-btn:hover{border-color:var(--primary);color:var(--primary);}
+  input[type="date"].inp{max-width:100%;min-width:0;}
   @media(max-width:640px){
     .app{padding:20px 12px 40px;}
     .tab-content{padding:16px 12px;}
     .tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;}
     .tab-btn{white-space:nowrap;padding:6px 12px;font-size:0.8rem;}
     .result-row{flex-direction:column;align-items:stretch;gap:6px;}
+    .result-date{min-width:0;font-size:0.75rem;}
+    .result-info{font-size:0.82rem;word-break:break-word;}
     .result-actions{flex-direction:column!important;gap:6px!important;}
     .result-actions .btn-sm{width:100%;padding:9px 14px;text-align:center;font-size:0.85rem;}
     .card-actions{flex-direction:column;}
@@ -77,7 +80,9 @@ const ADMIN_CSS = `
     .item-card{flex-wrap:wrap;}
     .card-info{min-width:0;flex:1;}
     .form-grid{grid-template-columns:1fr!important;}
-    .modal{padding:20px 16px;}
+    .modal{padding:20px 16px;max-height:95vh;}
+    input[type="date"].inp{width:100%;max-width:100%;min-width:0;font-size:0.9rem;}
+    .label{font-size:0.8rem;}
   }
 `;
 
@@ -278,7 +283,7 @@ function StaffTab({ token }) {
   return (
     <div>
       <div className="tab-head"><h3>{tr('title')} ({staff.length})</h3><button className="btn btn-primary" onClick={openAdd}>{tr('add')}</button></div>
-      <div className="item-list">{staff.map(s=>(<div className="item-card" key={s.id}><img className="card-photo" src={s.photo||''} onError={e=>e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} alt=""/><div className="card-info"><span className="card-name">{s.name}</span><span className="card-sub">{s.role}</span><span className="card-sub">{s.email}</span></div><div className="card-actions"><button className="btn-sm" onClick={()=>openEdit(s)}>{tr('edit')}</button><button className="btn-sm btn-danger" onClick={()=>del(s.id)}>{tr('del')}</button></div></div>))}</div>
+      <div className="item-list">{staff.map(s=>(<div className="item-card" key={s.id}><img className="card-photo" src={s.photo||''} onError={e=>e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} alt=""/><div className="card-info"><span className="card-name">{s.name}</span><span className="card-sub">{s.role}</span><span className="card-sub">{s.email}</span></div><div className="card-actions"><button className="btn-sm" onClick={()=>openEdit(s)}>{tr('edit')}</button></div></div>))}</div>
       {modal&&(<Modal title={modal.mode==='add'?tr('addTitle'):tr('editTitle')} onClose={()=>setModal(null)}><div className="form-grid"><label className="label">{tr('f.name')}<input className="inp" value={form.name||''} onChange={e=>setForm({...form,name:e.target.value})}/></label><label className="label">{tr('f.role')}<input className="inp" value={form.role||''} onChange={e=>setForm({...form,role:e.target.value})}/></label><label className="label" style={{gridColumn:'1/-1'}}>{tr('f.email')}<input className="inp" type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})}/></label><label className="label" style={{gridColumn:'1/-1'}}>{tr('f.photo')}<PhotoUpload current={form.photo||''} onChange={setPhotoFile}/></label></div><div className="modal-foot"><button className="btn btn-outline" onClick={()=>setModal(null)}>{tr('cancel')}</button><button className="btn btn-primary" onClick={save} disabled={saving}>{saving?tr('saving'):tr('save')}</button></div></Modal>)}
     </div>
   );
