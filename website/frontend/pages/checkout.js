@@ -181,7 +181,7 @@ export default function Checkout() {
                   <input type="radio" name="payment" value="card" disabled />
                   <div className="option-content">
                     <span className="option-title">💳 Kartë Krediti / Debiti</span>
-                    <p>{locale === "en" ? "Coming soon..." : "Se shpejti..."} <span style={{ background: "var(--accent)", color: "#fff", fontSize: "0.7rem", fontWeight: 700, padding: "2px 8px", borderRadius: "999px", marginLeft: "4px" }}>{locale === "en" ? "Coming Soon" : "Se Shpejti"}</span></p>
+                    <p><span style={{ background: "var(--accent)", color: "#fff", fontSize: "0.7rem", fontWeight: 700, padding: "2px 8px", borderRadius: "999px" }}>{locale === "en" ? "Coming Soon" : "Se Shpejti"}</span></p>
                   </div>
                 </label>
               </div>
