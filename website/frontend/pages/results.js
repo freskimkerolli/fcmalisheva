@@ -40,11 +40,13 @@ function TeamBadge({ name, label }) {
   );
 }
 
-function getResult(score) {
+function getResult(score, isHome) {
   if (!score) return null;
   const [a, b] = score.split("-").map(Number);
-  if (a > b) return { label: "F", color: "#16a34a", bg: "#dcfce7" };
-  if (a === b) return { label: "B", color: "#d97706", bg: "#fef3c7" };
+  const mal = isHome !== false ? a : b;
+  const opp = isHome !== false ? b : a;
+  if (mal > opp) return { label: "F", color: "#16a34a", bg: "#dcfce7" };
+  if (mal === opp) return { label: "B", color: "#d97706", bg: "#fef3c7" };
   return { label: "H", color: "#dc2626", bg: "#fee2e2" };
 }
 
@@ -76,7 +78,7 @@ export default function Results() {
           <h3 style={styles.sectionTitle}>{t("results.latestMatches")}</h3>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {data.matches.map((m) => {
-              const res = getResult(m.score);
+              const res = getResult(m.score, m.isHome);
               const [gf, ga] = (m.score || "").split("-").map(Number);
               return (
                 <div key={m.id} style={styles.matchCard}>
@@ -92,7 +94,7 @@ export default function Results() {
 
                     <div style={styles.scoreBlock}>
                       <span style={styles.score}>
-                        {m.isHome ? `${gf} - ${ga}` : `${ga} - ${gf}`}
+                        {`${gf} - ${ga}`}
                       </span>
                       {res && (
                         <span style={{ ...styles.badge, color: res.color, background: res.bg }}>
