@@ -1,4 +1,4 @@
-import formidable from 'formidable';
+import { formidable } from 'formidable';
 import { v2 as cloudinary } from 'cloudinary';
 
 const CLOUDINARY_ENABLED = !!(
