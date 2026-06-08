@@ -340,6 +340,11 @@ table {
   min-width: 540px;
 }
 
+/* Parandalon overflow horizontal në mobile */
+@media (max-width: 768px) {
+  table { min-width: auto; }
+}
+
 th,
 td {
   padding: 14px 12px;

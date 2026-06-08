@@ -63,11 +63,11 @@ export default function Results() {
 
   return (
     <>
-      <section style={{ textAlign: "center", marginBottom: "32px" }}>
+      <section style={{ display: "flex", justifyContent: "center", marginBottom: "32px" }}>
         <img
           src="/assets/logos/albi-mall-superliga.d81b909e28ccd58241ed.png"
           alt="Albi Mall Superliga"
-          style={{ maxHeight: "90px", objectFit: "contain", margin: "0 auto" }}
+          style={{ maxHeight: "90px", maxWidth: "100%", objectFit: "contain" }}
         />
       </section>
 
@@ -272,11 +272,13 @@ const styles = {
     border: "1px solid #e5e7eb",
     borderRadius: "12px",
     overflow: "hidden",
+    overflowX: "auto",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
     fontSize: "0.88rem",
+    minWidth: "340px",
   },
   th: {
     padding: "10px 14px",
