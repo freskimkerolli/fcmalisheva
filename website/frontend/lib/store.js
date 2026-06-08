@@ -120,21 +120,21 @@ export async function getResults() {
 }
 export async function createResult(data) {
   const pool = await getPool();
-  const { date, opponent, score, competition, venue, matchday } = data;
+  const { date, opponent, score, competition, venue, matchday, isHome } = data;
   const { rows } = await pool.query(
-    `INSERT INTO results (date,opponent,score,competition,venue,matchday)
-     VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-    [date || null, opponent, score, competition, venue, matchday || null]
+    `INSERT INTO results (date,opponent,score,competition,venue,matchday,is_home)
+     VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+    [date || null, opponent, score, competition, venue, matchday || null, isHome !== false]
   );
   return mapResult(rows[0]);
 }
 export async function updateResult(id, data) {
   const pool = await getPool();
-  const { date, opponent, score, competition, venue, matchday } = data;
+  const { date, opponent, score, competition, venue, matchday, isHome } = data;
   const { rows } = await pool.query(
-    `UPDATE results SET date=$1,opponent=$2,score=$3,competition=$4,venue=$5,matchday=$6
-     WHERE id=$7 RETURNING *`,
-    [date || null, opponent, score, competition, venue, matchday || null, Number(id)]
+    `UPDATE results SET date=$1,opponent=$2,score=$3,competition=$4,venue=$5,matchday=$6,is_home=$7
+     WHERE id=$8 RETURNING *`,
+    [date || null, opponent, score, competition, venue, matchday || null, isHome !== false, Number(id)]
   );
   return rows.length ? mapResult(rows[0]) : null;
 }
