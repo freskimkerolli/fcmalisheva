@@ -29,7 +29,7 @@ export default function Home() {
             <img
               src="/assets/logos/UECL-Logo.png"
               alt="UECL"
-              style={{ position:"absolute", bottom:"10px", left:"18px", height:"72px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none", opacity:0.9 }}
+              style={{ position:"absolute", bottom:"10px", left:"18px", height:"88px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none", opacity:0.9 }}
             />
 
             {/* Buy Tickets — qendër poshtë */}
@@ -53,7 +53,7 @@ export default function Home() {
             </div>
 
             {/* Qendra — logot + data/ora në mes */}
-            <div style={{ position:"relative", zIndex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:"48px" }}>
+            <div style={{ position:"relative", zIndex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:"72px" }}>
               {/* Ekipi vendas */}
               <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"8px" }}>
                 <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} style={{ width:"90px", height:"90px", objectFit:"contain" }} />
@@ -62,8 +62,8 @@ export default function Home() {
 
               {/* Data & ora — qendër */}
               <div style={{ textAlign:"center", minWidth:"110px" }}>
-                <div style={{ fontSize:"0.65rem", color:"rgba(255,255,255,0.4)", letterSpacing:"0.1em", marginBottom:"6px" }}>vs</div>
-                <div style={{ color:"var(--accent)", fontSize:"0.92rem", fontWeight:700, lineHeight:1.3 }}>{match.match_date}</div>
+                <div style={{ fontSize:"0.65rem", color:"#fff", letterSpacing:"0.1em", marginBottom:"6px" }}>vs</div>
+                <div style={{ color:"#fff", fontSize:"0.92rem", fontWeight:700, lineHeight:1.3 }}>{match.match_date}</div>
                 {match.match_time && <div style={{ color:"#fff", fontSize:"0.88rem", fontWeight:600, marginTop:"4px" }}>{match.match_time}</div>}
               </div>
 
