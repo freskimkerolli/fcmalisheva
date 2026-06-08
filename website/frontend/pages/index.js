@@ -80,7 +80,7 @@ export default function Home() {
             <div className="match-header">
               <span className="competition-badge">{t("home.nextMatch")}</span>
               <img src="/assets/logos/albi-mall-superliga.d81b909e28ccd58241ed.png" alt="Albi Mall Superliga" style={{height:"60px", width:"auto", objectFit:"contain"}} />
-              <span className="stadium-info" style={{color:"var(--primary)"}}>{match.stadium}</span>
+              <span className="stadium-info" style={{color:"var(--primary)"}}>{match.stadium?.replace(/ (?=[^ ]*$)/,' ')}</span>
             </div>
             <div className="match-container">
               <div className="team team-home">
