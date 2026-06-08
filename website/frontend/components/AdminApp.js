@@ -7,9 +7,9 @@ const ADMIN_CSS = `
   input,select,button,textarea{font:inherit;}
   img{max-width:100%;display:block;}
   .app{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
-  .app-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;background:#fff;border-radius:14px;padding:14px 20px;border:1px solid rgba(15,23,42,0.08);}
-  .app-title{font-size:1.4rem;font-weight:700;color:#1f4b8d;}
-  .app-title span{color:#1f4b8d;font-size:1.4rem;font-weight:700;margin-left:0;}
+  .app-header{display:flex;align-items:center;justify-content:flex-end;margin-bottom:24px;gap:10px;}
+  .app-title{display:none;}
+  .app-title span{display:none;}
   .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
   .login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:400px;}
   .login-card h2{color:var(--primary);font-size:1.4rem;margin-bottom:4px;}
