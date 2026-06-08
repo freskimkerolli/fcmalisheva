@@ -4,8 +4,9 @@ import { useRouter } from "next/router";
 export default function Checkout() {
   const router = useRouter();
   const [order, setOrder] = useState(null);
-  const [step, setStep] = useState("payment-method"); // payment-method, customer-info, review, confirmation
+  const [step, setStep] = useState("payment-method");
   const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [loading, setLoading] = useState(false);
 
   const [customerData, setCustomerData] = useState({
     firstName: "",
@@ -15,38 +16,37 @@ export default function Checkout() {
     phone: "",
   });
 
-  const [cardData, setCardData] = useState({
-    cardNumber: "",
-    cardHolder: "",
-    expiryDate: "",
-    cvv: "",
-  });
-
   const [message, setMessage] = useState("");
 
-  // Lexo porosinë nga localStorage
   useEffect(() => {
+    if (!router.isReady) return;
+
+    const { success, canceled } = router.query;
+
+    if (success === "true") {
+      localStorage.removeItem("currentOrder");
+      setStep("confirmation");
+      return;
+    }
+
+    if (canceled === "true") {
+      setMessage("Pagesa u anulua. Mund të provosh përsëri.");
+      router.replace("/checkout", undefined, { shallow: true });
+    }
+
     const savedOrder = localStorage.getItem("currentOrder");
     if (savedOrder) {
       setOrder(JSON.parse(savedOrder));
-    } else {
+    } else if (success !== "true") {
       router.push("/shop");
     }
-  }, [router]);
+  }, [router.isReady, router.query]);
 
   const handleCustomerChange = (field, value) => {
     setCustomerData({ ...customerData, [field]: value });
   };
 
-  const handleCardChange = (field, value) => {
-    setCardData({ ...cardData, [field]: value });
-  };
-
   const goToCustomerInfo = () => {
-    if (!paymentMethod) {
-      setMessage("Zgjidh metodën e pagesës");
-      return;
-    }
     setMessage("");
     setStep("customer-info");
   };
@@ -59,40 +59,66 @@ export default function Checkout() {
       !customerData.city ||
       !customerData.phone
     ) {
-      setMessage("Ploteso të gjitha fushat e kërkuara");
+      setMessage("Plotëso të gjitha fushat e kërkuara");
       return;
     }
-
-    if (paymentMethod === "card") {
-      if (
-        !cardData.cardNumber ||
-        !cardData.cardHolder ||
-        !cardData.expiryDate ||
-        !cardData.cvv
-      ) {
-        setMessage("Ploteso të gjitha të dhënat e kartës");
-        return;
-      }
-    }
-
     setMessage("");
     setStep("review");
   };
 
-  const confirmOrder = () => {
-    setStep("confirmation");
-    setMessage(
-      `✅ Porosia u regjistrua me sukses! Shënim i veçantë: Shtrim i Stripe do të shtuar në të ardhmen.`,
-    );
+  const confirmOrder = async () => {
+    if (paymentMethod === "card") {
+      setLoading(true);
+      setMessage("");
+      try {
+        const res = await fetch("/api/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jerseyType: order.jerseyType,
+            jerseyPrice: order.jerseyPrice,
+            playerName: order.playerName,
+            customerName: `${customerData.firstName} ${customerData.lastName}`,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Gabim");
+        window.location.href = data.url;
+      } catch (err) {
+        setMessage(`Gabim: ${err.message}`);
+        setLoading(false);
+      }
+      return;
+    }
 
-    // Pastro localStorage
-    setTimeout(() => {
-      localStorage.removeItem("currentOrder");
-      setTimeout(() => {
-        router.push("/shop");
-      }, 3000);
-    }, 4000);
+    // Cash on delivery
+    setStep("confirmation");
+    localStorage.removeItem("currentOrder");
   };
+
+  if (step === "confirmation") {
+    return (
+      <>
+        <section className="page-header">
+          <p className="eyebrow">Checkout</p>
+          <h2>Përfundo porosinë tuaj</h2>
+        </section>
+        <div className="checkout-container">
+          <div className="checkout-content">
+            <div className="checkout-step confirmation">
+              <div className="confirmation-icon">✓</div>
+              <h3>Porosia u Konfirmua!</h3>
+              <p>Faleminderit për porosinë tuaj. Do t'ju kontaktojmë shumë shpejt.</p>
+              <p style={{ fontSize: "0.9rem", color: "var(--muted)", marginTop: "16px" }}>
+                Po ridrejtohesh në dyqan...
+              </p>
+            </div>
+          </div>
+        </div>
+        {setTimeout(() => router.push("/shop"), 4000) && null}
+      </>
+    );
+  }
 
   if (!order) {
     return <div className="page-container">Po ngarkohet...</div>;
@@ -108,30 +134,25 @@ export default function Checkout() {
       {message && <div className="checkout-message">{message}</div>}
 
       <div className="checkout-container">
-        {/* Progress Indicator */}
+        {/* Progress */}
         <div className="progress-bar">
-          <div
-            className={`step ${step === "payment-method" ? "active" : step === "customer-info" || step === "review" || step === "confirmation" ? "completed" : ""}`}
-          >
-            <span>1</span>
-            <p>Metoda</p>
-          </div>
-          <div
-            className={`step ${step === "customer-info" ? "active" : step === "review" || step === "confirmation" ? "completed" : ""}`}
-          >
-            <span>2</span>
-            <p>Të dhënat</p>
-          </div>
-          <div
-            className={`step ${step === "review" ? "active" : step === "confirmation" ? "completed" : ""}`}
-          >
-            <span>3</span>
-            <p>Përmbledhja</p>
-          </div>
-          <div className={`step ${step === "confirmation" ? "active" : ""}`}>
-            <span>4</span>
-            <p>Konfirmo</p>
-          </div>
+          {[
+            { key: "payment-method", label: "Metoda", n: 1 },
+            { key: "customer-info", label: "Të dhënat", n: 2 },
+            { key: "review", label: "Përmbledhja", n: 3 },
+          ].map(({ key, label, n }, i, arr) => {
+            const steps = arr.map((s) => s.key);
+            const currentIdx = steps.indexOf(step);
+            const thisIdx = i;
+            const isActive = step === key;
+            const isCompleted = currentIdx > thisIdx;
+            return (
+              <div key={key} className={`step ${isActive ? "active" : isCompleted ? "completed" : ""}`}>
+                <span>{n}</span>
+                <p>{label}</p>
+              </div>
+            );
+          })}
         </div>
 
         <div className="checkout-content">
@@ -149,9 +170,7 @@ export default function Checkout() {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                   />
                   <div className="option-content">
-                    <span className="option-title">
-                      💵 Pagesa në Dorëzim (Cash)
-                    </span>
+                    <span className="option-title">💵 Pagesa në Dorëzim (Cash)</span>
                     <p>Paguaj kur të marrësh porosinë</p>
                   </div>
                 </label>
@@ -165,23 +184,19 @@ export default function Checkout() {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                   />
                   <div className="option-content">
-                    <span className="option-title">💳 Kreditë Kartë</span>
-                    <p>Pagesa online me kartë</p>
+                    <span className="option-title">💳 Kartë Krediti / Debiti</span>
+                    <p>Pagesa e sigurt online me Stripe — Visa, Mastercard etj.</p>
                   </div>
                 </label>
               </div>
 
-              <button
-                onClick={goToCustomerInfo}
-                className="button"
-                style={{ marginTop: "24px" }}
-              >
+              <button onClick={goToCustomerInfo} className="button" style={{ marginTop: "24px" }}>
                 Vazhdo →
               </button>
             </div>
           )}
 
-          {/* Step 2: Customer Information */}
+          {/* Step 2: Customer Info */}
           {step === "customer-info" && (
             <div className="checkout-step">
               <h3>Të dhënat e dorëzimit</h3>
@@ -192,9 +207,7 @@ export default function Checkout() {
                     <input
                       type="text"
                       value={customerData.firstName}
-                      onChange={(e) =>
-                        handleCustomerChange("firstName", e.target.value)
-                      }
+                      onChange={(e) => handleCustomerChange("firstName", e.target.value)}
                       placeholder="Emri juaj"
                     />
                   </label>
@@ -203,9 +216,7 @@ export default function Checkout() {
                     <input
                       type="text"
                       value={customerData.lastName}
-                      onChange={(e) =>
-                        handleCustomerChange("lastName", e.target.value)
-                      }
+                      onChange={(e) => handleCustomerChange("lastName", e.target.value)}
                       placeholder="Mbiemri juaj"
                     />
                   </label>
@@ -216,9 +227,7 @@ export default function Checkout() {
                   <input
                     type="text"
                     value={customerData.address}
-                    onChange={(e) =>
-                      handleCustomerChange("address", e.target.value)
-                    }
+                    onChange={(e) => handleCustomerChange("address", e.target.value)}
                     placeholder="Rruga, numri i shtëpisë"
                   />
                 </label>
@@ -229,9 +238,7 @@ export default function Checkout() {
                     <input
                       type="text"
                       value={customerData.city}
-                      onChange={(e) =>
-                        handleCustomerChange("city", e.target.value)
-                      }
+                      onChange={(e) => handleCustomerChange("city", e.target.value)}
                       placeholder="Qyteti"
                     />
                   </label>
@@ -240,95 +247,31 @@ export default function Checkout() {
                     <input
                       type="tel"
                       value={customerData.phone}
-                      onChange={(e) =>
-                        handleCustomerChange("phone", e.target.value)
-                      }
+                      onChange={(e) => handleCustomerChange("phone", e.target.value)}
                       placeholder="+383 XX XXX XXX"
                     />
                   </label>
                 </div>
 
-                {/* Card Information (if payment method is card) */}
                 {paymentMethod === "card" && (
-                  <>
-                    <h4 style={{ marginTop: "24px", marginBottom: "16px" }}>
-                      Të dhënat e kartës
-                    </h4>
-
-                    <label>
-                      <span>Numri i kartës *</span>
-                      <input
-                        type="text"
-                        value={cardData.cardNumber}
-                        onChange={(e) =>
-                          handleCardChange(
-                            "cardNumber",
-                            e.target.value.replace(/\s/g, "").slice(0, 16),
-                          )
-                        }
-                        placeholder="1234 5678 9012 3456"
-                        maxLength="16"
-                      />
-                    </label>
-
-                    <label>
-                      <span>Emri në kartë *</span>
-                      <input
-                        type="text"
-                        value={cardData.cardHolder}
-                        onChange={(e) =>
-                          handleCardChange(
-                            "cardHolder",
-                            e.target.value.toUpperCase(),
-                          )
-                        }
-                        placeholder="EMRI MBIEMRI"
-                      />
-                    </label>
-
-                    <div className="form-row">
-                      <label>
-                        <span>Skadimi (MM/YY) *</span>
-                        <input
-                          type="text"
-                          value={cardData.expiryDate}
-                          onChange={(e) => {
-                            let value = e.target.value.replace(/\D/g, "");
-                            if (value.length >= 2) {
-                              value =
-                                value.slice(0, 2) + "/" + value.slice(2, 4);
-                            }
-                            handleCardChange("expiryDate", value);
-                          }}
-                          placeholder="MM/YY"
-                          maxLength="5"
-                        />
-                      </label>
-                      <label>
-                        <span>CVV *</span>
-                        <input
-                          type="text"
-                          value={cardData.cvv}
-                          onChange={(e) =>
-                            handleCardChange(
-                              "cvv",
-                              e.target.value.replace(/\D/g, "").slice(0, 3),
-                            )
-                          }
-                          placeholder="123"
-                          maxLength="3"
-                        />
-                      </label>
-                    </div>
-                  </>
+                  <div
+                    style={{
+                      marginTop: "20px",
+                      padding: "14px 16px",
+                      background: "rgba(15,116,255,0.06)",
+                      border: "1px solid rgba(15,116,255,0.2)",
+                      borderRadius: "12px",
+                      fontSize: "0.88rem",
+                      color: "var(--primary)",
+                    }}
+                  >
+                    💳 Të dhënat e kartës do të futet te faqja e sigurt e <strong>Stripe</strong> në hapin tjetër.
+                  </div>
                 )}
               </form>
 
               <div className="form-actions" style={{ marginTop: "24px" }}>
-                <button
-                  onClick={() => setStep("payment-method")}
-                  className="button secondary"
-                >
+                <button onClick={() => setStep("payment-method")} className="button secondary">
                   ← Prapa
                 </button>
                 <button onClick={goToReview} className="button">
@@ -355,31 +298,21 @@ export default function Checkout() {
               </div>
 
               <div className="review-section">
-                <h4>Dorëzimi në</h4>
+                <h4>Dorëzimi</h4>
                 <div className="review-address">
-                  <p>
-                    {customerData.firstName} {customerData.lastName}
-                  </p>
+                  <p>{customerData.firstName} {customerData.lastName}</p>
                   <p>{customerData.address}</p>
                   <p>{customerData.city}</p>
                   <p>{customerData.phone}</p>
                 </div>
-                <button
-                  onClick={() => setStep("customer-info")}
-                  className="button secondary"
-                  style={{ marginTop: "12px" }}
-                >
+                <button onClick={() => setStep("customer-info")} className="button secondary" style={{ marginTop: "12px" }}>
                   Ndrysho →
                 </button>
               </div>
 
               <div className="review-section">
                 <h4>Metoda e pagesës</h4>
-                <p>
-                  {paymentMethod === "cash"
-                    ? "💵 Pagesa në Dorëzim"
-                    : "💳 Kreditë Kartë"}
-                </p>
+                <p>{paymentMethod === "cash" ? "💵 Pagesa në Dorëzim" : "💳 Kartë Krediti / Debiti (Stripe)"}</p>
               </div>
 
               <div className="review-total">
@@ -387,37 +320,13 @@ export default function Checkout() {
               </div>
 
               <div className="form-actions" style={{ marginTop: "24px" }}>
-                <button
-                  onClick={() => setStep("customer-info")}
-                  className="button secondary"
-                >
+                <button onClick={() => setStep("customer-info")} className="button secondary">
                   ← Prapa
                 </button>
-                <button onClick={confirmOrder} className="button">
-                  Konfirmo Porosinë ✓
+                <button onClick={confirmOrder} className="button" disabled={loading}>
+                  {loading ? "Po ridrejton te Stripe..." : paymentMethod === "card" ? "💳 Paguaj me Stripe" : "Konfirmo Porosinë ✓"}
                 </button>
               </div>
-            </div>
-          )}
-
-          {/* Step 4: Confirmation */}
-          {step === "confirmation" && (
-            <div className="checkout-step confirmation">
-              <div className="confirmation-icon">✓</div>
-              <h3>Porosia u Regjistrua!</h3>
-              <p>
-                Faleminderit për porositë tuaj. Do t'ju kontaktojmë shumë
-                shpejt.
-              </p>
-              <p
-                style={{
-                  fontSize: "0.9rem",
-                  color: "var(--muted)",
-                  marginTop: "16px",
-                }}
-              >
-                Po ridirekciono në dyqan...
-              </p>
             </div>
           )}
         </div>
