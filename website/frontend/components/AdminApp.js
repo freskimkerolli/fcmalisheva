@@ -2,13 +2,7 @@ import { useState, useEffect, useRef, useContext, createContext } from 'react';
 import { createPortal } from 'react-dom';
 
 const ADMIN_CSS = `
-  :root { --bg:#0b0f1a;--surface:#121a2d;--surface-2:#16223c;--text:#e8eef8;--muted:#9cb1d1;--primary:#c88f2a;--danger:#f87171;--border:rgba(255,255,255,0.08); }
-  .site-header{background:rgba(255,255,255,0.96)!important;backdrop-filter:blur(22px);}
-  .site-header .site-title{color:#111827!important;}
-  .site-header .eyebrow{color:#1f4b8d!important;}
-  .site-header .nav-menu a{color:#111827!important;}
-  .site-header .lang-btn{color:#111827!important;border-color:rgba(15,23,42,0.08)!important;}
-  .site-header .burger-btn{color:#111827!important;border-color:rgba(15,23,42,0.12)!important;}
+  :root { --bg:#f7f9ff;--surface:#ffffff;--surface-2:#eef1fb;--text:#111827;--muted:#5b6b8e;--primary:#1f4b8d;--accent:#0f74ff;--danger:#dc2626;--border:rgba(15,23,42,0.08); }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
   input,select,button,textarea{font:inherit;}
@@ -56,7 +50,7 @@ const ADMIN_CSS = `
   table{width:100%;border-collapse:collapse;font-size:0.9rem;margin-top:24px;}
   th{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);color:var(--muted);font-size:0.78rem;text-transform:uppercase;}
   td{padding:10px 14px;border-bottom:1px solid var(--border);}
-  tr.hl td{background:rgba(200,143,42,0.08);}
+  tr.hl td{background:rgba(31,75,141,0.06);}
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;}
   .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;}
   .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
@@ -253,7 +247,7 @@ function PlayersTab({ token }) {
       <div className="item-list">
         {players.map(p=>(
           <div className="item-card" key={p.id}>
-            <img className="card-photo" src={p.photo||''} onError={e=>e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} alt="" />
+            <img className="card-photo" src={p.photo||''} onError={e=>e.target.src='https://placehold.co/56x56/eef1fb/5b6b8e?text=FC'} alt="" />
             <div className="card-info"><span className="card-name">{p.name}{p.captain&&<span style={{marginLeft:'7px',background:'#c88f2a',color:'#fff',fontSize:'0.65rem',fontWeight:800,padding:'2px 7px',borderRadius:'999px',letterSpacing:'0.05em',verticalAlign:'middle'}}>© KAPITEN</span>}</span><span className="card-sub">#{p.number} · {p.position}</span><span className="card-sub">{p.nationality}</span></div>
             <div className="card-actions"><button className="btn-sm" onClick={()=>openEdit(p)}>{tr('edit')}</button><button className="btn-sm btn-danger" onClick={()=>del(p.id)}>{tr('del')}</button></div>
           </div>
@@ -271,7 +265,7 @@ function PlayersTab({ token }) {
             <label className="label">{tr('f.weight')}<input className="inp" placeholder={tr('placeholderWeight')} value={form.weight||''} onChange={e=>setForm({...form,weight:e.target.value})}/></label>
             <label className="label">{tr('f.photo')}<PhotoUpload current={form.photo||''} onChange={setPhotoFile}/></label>
             <label className="label" style={{gridColumn:'1/-1',flexDirection:'row',alignItems:'center',gap:'10px',cursor:'pointer'}}>
-              <input type="checkbox" checked={!!form.captain} onChange={e=>setForm({...form,captain:e.target.checked})} style={{width:'18px',height:'18px',cursor:'pointer',accentColor:'#c88f2a'}}/>
+              <input type="checkbox" checked={!!form.captain} onChange={e=>setForm({...form,captain:e.target.checked})} style={{width:'18px',height:'18px',cursor:'pointer',accentColor:'#1f4b8d'}}/>
               <span style={{color:'var(--text)',fontSize:'0.9rem'}}>⭐ Kapiten</span>
             </label>
           </div>
@@ -294,7 +288,7 @@ function StaffTab({ token }) {
   return (
     <div>
       <div className="tab-head"><h3>{tr('title')} ({staff.length})</h3><button className="btn btn-primary" onClick={openAdd}>{tr('add')}</button></div>
-      <div className="item-list">{staff.map(s=>(<div className="item-card" key={s.id}><img className="card-photo" src={s.photo||''} onError={e=>e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} alt=""/><div className="card-info"><span className="card-name">{s.name}</span><span className="card-sub">{s.role}</span><span className="card-sub">{s.email}</span></div><div className="card-actions staff-card-actions"><button className="btn-sm" onClick={()=>openEdit(s)}>{tr('edit')}</button></div></div>))}</div>
+      <div className="item-list">{staff.map(s=>(<div className="item-card" key={s.id}><img className="card-photo" src={s.photo||''} onError={e=>e.target.src='https://placehold.co/56x56/eef1fb/5b6b8e?text=FC'} alt=""/><div className="card-info"><span className="card-name">{s.name}</span><span className="card-sub">{s.role}</span><span className="card-sub">{s.email}</span></div><div className="card-actions staff-card-actions"><button className="btn-sm" onClick={()=>openEdit(s)}>{tr('edit')}</button></div></div>))}</div>
       {modal&&(<Modal title={modal.mode==='add'?tr('addTitle'):tr('editTitle')} onClose={()=>setModal(null)}><div className="form-grid"><label className="label">{tr('f.name')}<input className="inp" value={form.name||''} onChange={e=>setForm({...form,name:e.target.value})}/></label><label className="label">{tr('f.role')}<input className="inp" value={form.role||''} onChange={e=>setForm({...form,role:e.target.value})}/></label><label className="label" style={{gridColumn:'1/-1'}}>{tr('f.email')}<input className="inp" type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})}/></label><label className="label" style={{gridColumn:'1/-1'}}>{tr('f.photo')}<PhotoUpload current={form.photo||''} onChange={setPhotoFile}/></label></div><div className="modal-foot"><button className="btn btn-outline" onClick={()=>setModal(null)}>{tr('cancel')}</button><button className="btn btn-primary" onClick={save} disabled={saving}>{saving?tr('saving'):tr('save')}</button></div></Modal>)}
     </div>
   );
@@ -310,7 +304,7 @@ function GalleryTab({ token }) {
   return (
     <div>
       <div className="tab-head"><h3>{tr('title')} ({images.length})</h3><button className="btn btn-primary" onClick={()=>fileRef.current.click()} disabled={uploading}>{uploading?tr('uploading'):tr('upload')}</button><input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={upload}/></div>
-      <div className="gallery-grid">{images.map((url,i)=>(<div className="gallery-item" key={i}><img className="gallery-img" src={url} onError={e=>e.target.src='https://placehold.co/150x110/121a2d/9cb1d1?text=foto'} alt=""/><button className="gallery-del" onClick={()=>del(url)}>✕</button></div>))}</div>
+      <div className="gallery-grid">{images.map((url,i)=>(<div className="gallery-item" key={i}><img className="gallery-img" src={url} onError={e=>e.target.src='https://placehold.co/150x110/eef1fb/5b6b8e?text=foto'} alt=""/><button className="gallery-del" onClick={()=>del(url)}>✕</button></div>))}</div>
     </div>
   );
 }
