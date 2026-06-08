@@ -234,7 +234,7 @@ function PlayersTab({ token }) {
   const [saving, setSaving] = useState(false);
   const load = () => req('GET', '/api/players', null, token).then(setPlayers);
   useEffect(() => { load(); }, []);
-  function openAdd() { setForm({name:'',position:'',number:'',nationality:'Kosovar',birthDate:'',height:'',weight:'',photo:''}); setPhotoFile(null); setModal({mode:'add'}); }
+  function openAdd() { setForm({name:'',position:'',number:'',nationality:'Kosovar',birthDate:'',height:'',weight:'',photo:'',captain:false}); setPhotoFile(null); setModal({mode:'add'}); }
   function openEdit(p) { setForm({...p}); setPhotoFile(null); setModal({mode:'edit',id:p.id}); }
   async function save() {
     setSaving(true);
@@ -270,6 +270,10 @@ function PlayersTab({ token }) {
             <label className="label">{tr('f.height')}<input className="inp" placeholder={tr('placeholderHeight')} value={form.height||''} onChange={e=>setForm({...form,height:e.target.value})}/></label>
             <label className="label">{tr('f.weight')}<input className="inp" placeholder={tr('placeholderWeight')} value={form.weight||''} onChange={e=>setForm({...form,weight:e.target.value})}/></label>
             <label className="label">{tr('f.photo')}<PhotoUpload current={form.photo||''} onChange={setPhotoFile}/></label>
+            <label className="label" style={{gridColumn:'1/-1',flexDirection:'row',alignItems:'center',gap:'10px',cursor:'pointer'}}>
+              <input type="checkbox" checked={!!form.captain} onChange={e=>setForm({...form,captain:e.target.checked})} style={{width:'18px',height:'18px',cursor:'pointer',accentColor:'#c88f2a'}}/>
+              <span style={{color:'var(--text)',fontSize:'0.9rem'}}>⭐ Kapiten</span>
+            </label>
           </div>
           <div className="modal-foot"><button className="btn btn-outline" onClick={()=>setModal(null)}>{tr('cancel')}</button><button className="btn btn-primary" onClick={save} disabled={saving}>{saving?tr('saving'):tr('save')}</button></div>
         </Modal>

@@ -892,8 +892,6 @@ tr:hover {
 .footer-logo {
   width: 60px;
   height: 60px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
   transition: transform 0.25s ease;
 }
 
