@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useContext, createContext } from 'react';
 import { createPortal } from 'react-dom';
+import { useRouter } from 'next/router';
 
 const ADMIN_CSS = `
   :root { --bg:#f7f9ff;--surface:#ffffff;--surface-2:#eef1fb;--text:#111827;--muted:#5b6b8e;--primary:#1f4b8d;--accent:#0f74ff;--danger:#dc2626;--border:rgba(15,23,42,0.08); }
@@ -393,6 +394,7 @@ function SponsorsTab({ token }) {
 }
 
 function App() {
+  const router = useRouter();
   const [token, setToken] = useState(null);
   const [tab, setTab] = useState(0);
   const [lang, setLang] = useState('sq');
@@ -407,7 +409,7 @@ function App() {
   }, []);
 
   const tr = TRANSLATIONS[lang];
-  function switchLang() { const next=lang==='sq'?'en':'sq'; setLang(next); localStorage.setItem('admin_lang',next); }
+  function switchLang() { const next=lang==='sq'?'en':'sq'; setLang(next); localStorage.setItem('admin_lang',next); router.push(router.pathname,router.asPath,{locale:next}); }
   function t(path) { const keys=path.split('.'); let v=tr; for(const k of keys)v=v?.[k]; return v??path; }
 
   if (!token) return <Login onLogin={t=>{setToken(t);}} lang={lang} setLang={l=>{setLang(l);localStorage.setItem('admin_lang',l);}}/>;
