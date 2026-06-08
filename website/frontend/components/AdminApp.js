@@ -254,7 +254,7 @@ function PlayersTab({ token }) {
         {players.map(p=>(
           <div className="item-card" key={p.id}>
             <img className="card-photo" src={p.photo||''} onError={e=>e.target.src='https://placehold.co/56x56/121a2d/9cb1d1?text=FC'} alt="" />
-            <div className="card-info"><span className="card-name">{p.name}</span><span className="card-sub">#{p.number} · {p.position}</span><span className="card-sub">{p.nationality}</span></div>
+            <div className="card-info"><span className="card-name">{p.name}{p.captain&&<span style={{marginLeft:'7px',background:'#c88f2a',color:'#fff',fontSize:'0.65rem',fontWeight:800,padding:'2px 7px',borderRadius:'999px',letterSpacing:'0.05em',verticalAlign:'middle'}}>© KAPITEN</span>}</span><span className="card-sub">#{p.number} · {p.position}</span><span className="card-sub">{p.nationality}</span></div>
             <div className="card-actions"><button className="btn-sm" onClick={()=>openEdit(p)}>{tr('edit')}</button><button className="btn-sm btn-danger" onClick={()=>del(p.id)}>{tr('del')}</button></div>
           </div>
         ))}
