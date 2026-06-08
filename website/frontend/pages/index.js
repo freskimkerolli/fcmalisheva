@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "../hooks/useTranslation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://fcmalisheva-production.up.railway.app/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 export default function Home() {
   const { t, locale } = useTranslation();
