@@ -23,49 +23,55 @@ export default function Home() {
           /* ── UCL Layout ── */
           <section
             className="upcoming-match-section ucl-section"
-            style={{ background:"#0a0a0a", border:"1px solid rgba(255,255,255,0.1)", position:"relative", overflow:"hidden", minHeight:"280px", padding:"24px 28px", display:"flex", flexDirection:"column", justifyContent:"space-between" }}
+            style={{ background:"#0a0a0a", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"16px", position:"relative", overflow:"hidden", padding:"24px 28px 72px", display:"flex", flexDirection:"column", gap:"24px" }}
           >
-            {/* UCL logo — watermark qendër */}
+            {/* UCL logo — këndi poshtë majtas */}
             <img
               src="/assets/logos/UECL-Logo.png"
               alt="UECL"
-              style={{ position:"absolute", left:"50%", top:"50%", transform:"translate(-50%,-50%)", height:"220px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none", opacity:0.18 }}
+              style={{ position:"absolute", bottom:"10px", left:"18px", height:"72px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none", opacity:0.9 }}
             />
 
-            {/* Rreshti i sipërm: info majtas · stadium djathtas */}
-            <div style={{ position:"relative", zIndex:1, display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
-              <div>
-                <div style={{ fontSize:"0.68rem", color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.12em", marginBottom:"3px" }}>{t("home.nextMatch")}</div>
-                <div style={{ fontSize:"0.88rem", fontWeight:700, color:"#fff", textTransform:"uppercase", letterSpacing:"0.08em" }}>UEFA Conference League</div>
-                {match.matchday && <div style={{ fontSize:"0.75rem", color:"rgba(255,255,255,0.5)", marginTop:"3px" }}>{match.matchday}</div>}
-              </div>
-              <div style={{ textAlign:"right" }}>
-                <div style={{ fontSize:"0.68rem", color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:"3px" }}>Stadium</div>
-                <div style={{ fontSize:"0.82rem", fontWeight:600, color:"#fff", textTransform:"uppercase" }}>{match.stadium}</div>
-              </div>
-            </div>
-
-            {/* Qendra: logot e ekipeve */}
-            <div style={{ position:"relative", zIndex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:"32px", padding:"16px 0" }}>
-              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"8px" }}>
-                <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} style={{ width:"80px", height:"80px", objectFit:"contain" }} />
-                <span style={{ color:"#fff", fontSize:"0.88rem", fontWeight:600, textAlign:"center" }}>{match.home_team}</span>
-              </div>
-              <span style={{ color:"rgba(255,255,255,0.35)", fontWeight:700, fontSize:"1.5rem" }}>vs</span>
-              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"8px" }}>
-                <img src={match.away_logo || "/assets/MalishevaLogo.png"} alt={match.away_team} style={{ width:"80px", height:"80px", objectFit:"contain" }} />
-                <span style={{ color:"#fff", fontSize:"0.88rem", fontWeight:600, textAlign:"center" }}>{match.away_team}</span>
-              </div>
-            </div>
-
-            {/* Rreshti i poshtëm: data majtas · bileta djathtas */}
-            <div style={{ position:"relative", zIndex:1, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <p style={{ color:"var(--accent)", margin:0, fontSize:"0.9rem", fontWeight:600 }}>
-                {match.match_date}{match.match_time ? ` · ${match.match_time}` : ""}
-              </p>
-              <a href={match.ticket_url || "#"} className="button tickets-btn" style={{ margin:0 }}>
+            {/* Buy Tickets — qendër poshtë */}
+            <div style={{ position:"absolute", bottom:"16px", left:"50%", transform:"translateX(-50%)", zIndex:1 }}>
+              <a href={match.ticket_url || "#"} className="button tickets-btn" style={{ margin:0, whiteSpace:"nowrap" }}>
                 🎫 {t("home.buyTickets")}
               </a>
+            </div>
+
+            {/* Rreshti i sipërm — një vijë, të gjitha të bardha */}
+            <div style={{ position:"relative", zIndex:1, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+              <span style={{ fontSize:"0.75rem", color:"#fff", textTransform:"uppercase", letterSpacing:"0.12em", fontWeight:500, flex:1 }}>
+                {t("home.nextMatch")}
+              </span>
+              <span style={{ fontSize:"0.88rem", fontWeight:700, color:"#fff", textTransform:"uppercase", letterSpacing:"0.08em", flex:1, textAlign:"center" }}>
+                UEFA Conference League
+              </span>
+              <span style={{ fontSize:"0.75rem", fontWeight:600, color:"#fff", textTransform:"uppercase", letterSpacing:"0.08em", flex:1, textAlign:"right" }}>
+                {match.stadium}
+              </span>
+            </div>
+
+            {/* Qendra — logot + data/ora në mes */}
+            <div style={{ position:"relative", zIndex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:"48px" }}>
+              {/* Ekipi vendas */}
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"8px" }}>
+                <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} style={{ width:"90px", height:"90px", objectFit:"contain" }} />
+                <span style={{ color:"#fff", fontSize:"0.9rem", fontWeight:600, textAlign:"center" }}>{match.home_team}</span>
+              </div>
+
+              {/* Data & ora — qendër */}
+              <div style={{ textAlign:"center", minWidth:"110px" }}>
+                <div style={{ fontSize:"0.65rem", color:"rgba(255,255,255,0.4)", letterSpacing:"0.1em", marginBottom:"6px" }}>vs</div>
+                <div style={{ color:"var(--accent)", fontSize:"0.92rem", fontWeight:700, lineHeight:1.3 }}>{match.match_date}</div>
+                {match.match_time && <div style={{ color:"#fff", fontSize:"0.88rem", fontWeight:600, marginTop:"4px" }}>{match.match_time}</div>}
+              </div>
+
+              {/* Ekipi mysafir */}
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"8px" }}>
+                <img src={match.away_logo || "/assets/MalishevaLogo.png"} alt={match.away_team} style={{ width:"90px", height:"90px", objectFit:"contain" }} />
+                <span style={{ color:"#fff", fontSize:"0.9rem", fontWeight:600, textAlign:"center" }}>{match.away_team}</span>
+              </div>
             </div>
           </section>
         ) : (
