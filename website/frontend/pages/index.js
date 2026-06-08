@@ -20,48 +20,50 @@ export default function Home() {
       {/* Upcoming Match */}
       {match && (
         match.competition?.toLowerCase().includes("conference") ? (
-          /* ── UCL Layout: logo poshtë majtas, ndeshja lart djathtas ── */
+          /* ── UCL Layout ── */
           <section
             className="upcoming-match-section ucl-section"
-            style={{ background:"#0a0a0a", border:"1px solid rgba(255,255,255,0.1)", position:"relative", overflow:"hidden", minHeight:"260px" }}
+            style={{ background:"#0a0a0a", border:"1px solid rgba(255,255,255,0.1)", position:"relative", overflow:"hidden", minHeight:"280px", padding:"24px 28px", display:"flex", flexDirection:"column", justifyContent:"space-between" }}
           >
-            {/* UCL logo — poshtë majtas */}
+            {/* UCL logo — watermark qendër */}
             <img
               src="/assets/logos/UECL-Logo.png"
               alt="UECL"
-              className="uecl-corner-logo"
-              style={{ position:"absolute", bottom:"14px", left:"14px", height:"190px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none" }}
+              style={{ position:"absolute", left:"50%", top:"50%", transform:"translate(-50%,-50%)", height:"220px", width:"auto", objectFit:"contain", mixBlendMode:"screen", pointerEvents:"none", opacity:0.18 }}
             />
 
-            {/* Ndeshja — lart djathtas */}
-            <div style={{ position:"relative", zIndex:1, display:"flex", flexDirection:"column", alignItems:"flex-end", gap:"10px" }}>
-              {/* Header */}
+            {/* Rreshti i sipërm: info majtas · stadium djathtas */}
+            <div style={{ position:"relative", zIndex:1, display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+              <div>
+                <div style={{ fontSize:"0.68rem", color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.12em", marginBottom:"3px" }}>{t("home.nextMatch")}</div>
+                <div style={{ fontSize:"0.88rem", fontWeight:700, color:"#fff", textTransform:"uppercase", letterSpacing:"0.08em" }}>UEFA Conference League</div>
+                {match.matchday && <div style={{ fontSize:"0.75rem", color:"rgba(255,255,255,0.5)", marginTop:"3px" }}>{match.matchday}</div>}
+              </div>
               <div style={{ textAlign:"right" }}>
-                <div style={{ fontSize:"0.72rem", color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:"2px" }}>{t("home.nextMatch")}</div>
-                <div style={{ fontSize:"0.82rem", fontWeight:700, color:"#fff", textTransform:"uppercase", letterSpacing:"0.08em" }}>UEFA Conference League</div>
-                <div style={{ fontSize:"0.75rem", color:"rgba(255,255,255,0.55)", textTransform:"uppercase", letterSpacing:"0.06em", marginTop:"2px" }}>{match.stadium}</div>
+                <div style={{ fontSize:"0.68rem", color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:"3px" }}>Stadium</div>
+                <div style={{ fontSize:"0.82rem", fontWeight:600, color:"#fff", textTransform:"uppercase" }}>{match.stadium}</div>
               </div>
+            </div>
 
-              {/* Ekipet */}
-              <div style={{ display:"flex", alignItems:"center", gap:"14px" }}>
-                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"5px" }}>
-                  <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} style={{ width:"60px", height:"60px", objectFit:"contain" }} />
-                  <span style={{ color:"#fff", fontSize:"0.85rem", fontWeight:600, textAlign:"center" }}>{match.home_team}</span>
-                </div>
-                <span style={{ color:"rgba(255,255,255,0.5)", fontWeight:700, fontSize:"1rem" }}>vs</span>
-                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"5px" }}>
-                  <img src={match.away_logo || "/assets/MalishevaLogo.png"} alt={match.away_team} style={{ width:"60px", height:"60px", objectFit:"contain" }} />
-                  <span style={{ color:"#fff", fontSize:"0.85rem", fontWeight:600, textAlign:"center" }}>{match.away_team}</span>
-                </div>
+            {/* Qendra: logot e ekipeve */}
+            <div style={{ position:"relative", zIndex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:"32px", padding:"16px 0" }}>
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"8px" }}>
+                <img src={match.home_logo || "/assets/MalishevaLogo.png"} alt={match.home_team} style={{ width:"80px", height:"80px", objectFit:"contain" }} />
+                <span style={{ color:"#fff", fontSize:"0.88rem", fontWeight:600, textAlign:"center" }}>{match.home_team}</span>
               </div>
+              <span style={{ color:"rgba(255,255,255,0.35)", fontWeight:700, fontSize:"1.5rem" }}>vs</span>
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"8px" }}>
+                <img src={match.away_logo || "/assets/MalishevaLogo.png"} alt={match.away_team} style={{ width:"80px", height:"80px", objectFit:"contain" }} />
+                <span style={{ color:"#fff", fontSize:"0.88rem", fontWeight:600, textAlign:"center" }}>{match.away_team}</span>
+              </div>
+            </div>
 
-              {/* Data & ora */}
+            {/* Rreshti i poshtëm: data majtas · bileta djathtas */}
+            <div style={{ position:"relative", zIndex:1, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
               <p style={{ color:"var(--accent)", margin:0, fontSize:"0.9rem", fontWeight:600 }}>
                 {match.match_date}{match.match_time ? ` · ${match.match_time}` : ""}
               </p>
-
-              {/* Bileta */}
-              <a href={match.ticket_url || "#"} className="button tickets-btn" style={{ marginTop:"2px" }}>
+              <a href={match.ticket_url || "#"} className="button tickets-btn" style={{ margin:0 }}>
                 🎫 {t("home.buyTickets")}
               </a>
             </div>
